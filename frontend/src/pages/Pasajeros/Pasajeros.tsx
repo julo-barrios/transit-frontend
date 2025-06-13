@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import type  { PasajeroListItem } from "../types";
-import PageLayout from "../components/PageLayout";
+import type  { PasajeroListItem } from "../../types";
+import PageLayout from "../../components/PageLayout";
 import { Link } from "react-router-dom";
 
 const PasajerosTable = () => {
@@ -36,8 +36,8 @@ const PasajerosTable = () => {
               <th><input type="checkbox" className="checkbox" /></th>
               <th>Nombre</th>
               <th>Obra Social</th>
-              <th>Cuil</th>
-              <th>Fecha de nacimiento</th>
+              <th>Fecha de creacion</th>
+              <th></th>
               <th></th>
             </tr>
           </thead>
@@ -59,11 +59,9 @@ const PasajerosTable = () => {
                   </div>
                 </td>
                 <td>
-                  {p.obra_social}
-                  <br />
-                  <span className="badge badge-ghost badge-sm">Plan activo</span>
+                  <span className="badge badge-primary badge-sm">{p.obra_social}OSECAC</span>
                 </td>
-                <td>{p.fecha_nacimiento}</td>
+                <td>{new Date(p.created_at.Time).toLocaleDateString()}</td>
                 <th>
                   <Link to={`/pasajeros/${p.cuil}`} className="btn btn-ghost btn-xs">
                   detalles
