@@ -4,9 +4,11 @@ import {
   Users, 
   FileText, 
   TrendingUp, 
-  UserPlus, 
-  ArrowUpRight,
-  Clock
+  PlusCircle, 
+  ArrowRight,
+  Plus,
+  Clock,
+  Info
 } from "lucide-react";
 import { 
   BarChart, 
@@ -16,19 +18,19 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  Cell
+  Cell,
+  Legend
 } from 'recharts';
 import type { PasajeroListItem } from "../types";
 import { Link } from "react-router-dom";
 
-// Datos de ejemplo para el gráfico (luego los conectarás a tu API)
+// Datos de ejemplo que reflejan el desfasaje de 3 meses
 const dataGrafico = [
-  { name: 'Ene', total: 4000 },
-  { name: 'Feb', total: 3000 },
-  { name: 'Mar', total: 2000 },
-  { name: 'Abr', total: 2780 },
-  { name: 'May', total: 1890 },
-  { name: 'Jun', total: 2390 },
+  { name: 'Ago', facturado: 85000, acreditado: 85000 },
+  { name: 'Sep', facturado: 92000, acreditado: 92000 },
+  { name: 'Oct', facturado: 75000, acreditado: 0 },
+  { name: 'Nov', facturado: 110000, acreditado: 0 },
+  { name: 'Dic', facturado: 98000, acreditado: 0 },
 ];
 
 export default function Home() {
@@ -36,7 +38,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Reutilizamos tu lógica de fetching para mostrar datos reales
     const fetchStats = async () => {
       try {
         const response = await fetch('/api/v1/pasajeros');
@@ -54,9 +55,18 @@ export default function Home() {
   }, []);
 
   return (
-    <PageLayout title="Panel de Control" breadcrumbs={["Inicio"]}>
-      {/* 1. Fila de KPIs (Métricas clave) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <PageLayout 
+      title="Panel de Control" 
+      breadcrumbs={["Inicio"]}
+      // Usamos el prop 'action' que definimos antes para un botón global
+      action={
+        <Link to="/facturas/nueva" className="btn btn-primary btn-sm gap-2">
+          <Plus size={16} /> Nueva Factura
+        </Link>
+      }
+    >
+      {/* 1. Fila de KPIs (Resumen rápido) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="stats shadow bg-base-100 border border-base-200">
           <div className="stat">
             <div className="stat-figure text-primary">
@@ -67,18 +77,16 @@ export default function Home() {
             <div className="stat-desc text-success">↗︎ 4 (este mes)</div>
           </div>
         </div>
-
         <div className="stats shadow bg-base-100 border border-base-200">
           <div className="stat">
-            <div className="stat-figure text-secondary">
-              <FileText size={24} />
+            <div className="stat-figure text-success">
+              <TrendingUp size={24} />
             </div>
             <div className="stat-title text-xs uppercase font-semibold">Facturas Pendientes</div>
             <div className="stat-value text-secondary">12</div>
             <div className="stat-desc text-info">6 requieren atención</div>
           </div>
         </div>
-
         <div className="stats shadow bg-base-100 border border-base-200">
           <div className="stat">
             <div className="stat-figure text-success">
@@ -89,7 +97,6 @@ export default function Home() {
             <div className="stat-desc">21% más que el mes pasado</div>
           </div>
         </div>
-
         <div className="stats shadow bg-base-100 border border-base-200">
           <div className="stat">
             <div className="stat-figure text-warning">
@@ -100,74 +107,119 @@ export default function Home() {
             <div className="stat-desc">Días desde facturación</div>
           </div>
         </div>
+
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* 2. Gráfico de Facturación (Ocupa 2 columnas) */}
-        <div className="lg:col-span-2 card bg-base-100 shadow-sm border border-base-200 p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-bold text-lg flex items-center gap-2">
+        {/* 2. Sección del Gráfico (Ocupa 2 columnas) */}
+        <div className="lg:col-span-2">
+          <div className="card bg-base-100 border border-base-200 p-6">
+            <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
               <TrendingUp size={20} className="text-primary" />
-              Evolución de Facturación
+              Facturación vs. Acreditación
             </h3>
-            <select className="select select-bordered select-sm">
-              <option>Últimos 6 meses</option>
-              <option>Este año</option>
-            </select>
-          </div>
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={dataGrafico}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} />
-                <Tooltip 
-                  cursor={{fill: 'transparent'}}
-                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                />
-                <Bar dataKey="total" radius={[4, 4, 0, 0]}>
-                  {dataGrafico.map((_entry, index) => (
-                    <Cell key={`cell-${index}`} fill={index === dataGrafico.length - 1 ? '#570df8' : '#cbd5e1'} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="h-80 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dataGrafico} barGap={8}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                  <YAxis axisLine={false} tickLine={false} hide />
+                  <Tooltip 
+                      cursor={{fill: '#f8fafc'}}
+                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                  />
+                  <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
+                  
+                  <Bar 
+                    dataKey="facturado" 
+                    name="Facturado" 
+                    fill="#570df8" 
+                    radius={[4, 4, 0, 0]} 
+                    barSize={25}
+                  />
+                  
+                  <Bar 
+                    dataKey="acreditado" 
+                    name="Acreditado (Cobrado)" 
+                    fill="#22c55e" 
+                    radius={[4, 4, 0, 0]} 
+                    barSize={25}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            
+            <div className="mt-4 p-3 bg-base-200/50 rounded-lg flex gap-3 items-center">
+              <Info size={16} className="text-info" />
+              <p className="text-[10px] opacity-70 leading-tight">
+                <b>Nota de Negocio:</b> El gráfico refleja un ciclo de acreditación promedio de 90 días, 
+                permitiendo visualizar el desfasaje financiero típico de las Obras Sociales.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* 3. Lista de Pasajeros Recientes (Ocupa 1 columna) */}
-        <div className="card bg-base-100 shadow-sm border border-base-200 p-6">
+        {/* 3. Columna lateral (Pasajeros recientes o Acciones rápidas) */}
+        <div className="space-y-6">
+           {/* Aquí iría tu lista de pasajeros recientes */}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* 2. Gráfico Principal */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* 3. NUEVO CUADRO: ACCIONES RÁPIDAS (Nueva Factura) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="card bg-gradient-to-br from-primary to-primary-focus text-primary-content shadow-lg group">
+              <div className="card-body p-6">
+                <div className="flex justify-between items-start text-white/80">
+                  <FileText size={32} />
+                  <PlusCircle size={20} className="group-hover:scale-110 transition-transform" />
+                </div>
+                <h2 className="card-title text-2xl mt-4">Nueva Factura</h2>
+                <p className="text-sm opacity-80">Carga una nueva factura al sistema para un pasajero existente.</p>
+                <div className="card-actions justify-end mt-4">
+                  <Link to="/facturas/nueva" className="btn btn-sm bg-white text-primary border-none hover:bg-white/90">
+                    Comenzar <ArrowRight size={14} />
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="card bg-base-100 border-2 border-dashed border-base-300 hover:border-primary/50 transition-colors">
+              <div className="card-body p-6 items-center justify-center text-center">
+                <Users size={32} className="opacity-20 mb-2" />
+                <h3 className="font-bold opacity-40 italic">Módulo de Reportes</h3>
+                <p className="text-xs opacity-40">Próximamente: Exportación de datos para obras sociales</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 4. Lista Lateral */}
+        <div className="card bg-base-100 border border-base-200 p-6">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-lg">Pasajeros Recientes</h3>
-            <Link to="/pasajeros" className="btn btn-ghost btn-xs text-primary">Ver todos</Link>
+            <Link to="/pasajeros" className="text-xs text-primary font-bold hover:underline">Ver todos</Link>
           </div>
           <div className="space-y-4">
             {loading ? (
-              <div className="flex justify-center py-10"><span className="loading loading-spinner text-primary"></span></div>
+              <span className="loading loading-dots loading-md text-primary"></span>
             ) : (
-              pasajeros.slice(0, 5).map((p) => (
-                <div key={p.id} className="flex items-center justify-between group">
-                  <div className="flex items-center gap-3">
-                    <div className="avatar">
-                      <div className="mask mask-squircle w-10 h-10 bg-base-200">
-                        <img src={`https://api.dicebear.com/7.x/personas/svg?seed=${p.nombre}`} alt="avatar" />
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold">{p.nombre} {p.apellido}</p>
-                      <p className="text-xs opacity-50">{p.obra_social || "Sin Obra Social"}</p>
+              pasajeros.slice(0, 6).map((p) => (
+                <div key={p.id} className="flex items-center gap-3 p-2 hover:bg-base-200/50 rounded-lg transition-colors cursor-pointer">
+                  <div className="avatar">
+                    <div className="w-10 rounded-full">
+                      <img src={`https://api.dicebear.com/7.x/personas/svg?seed=${p.nombre}`} alt="avatar" />
                     </div>
                   </div>
-                  <Link to={`/pasajeros/${p.cuil}`} className="btn btn-ghost btn-circle btn-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                    <ArrowUpRight size={16} />
-                  </Link>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold truncate">{p.nombre} {p.apellido}</p>
+                    <p className="text-[10px] opacity-50 uppercase tracking-tighter">OS: {p.obra_social || "OSECAC"}</p>
+                  </div>
                 </div>
               ))
             )}
-            <button className="btn btn-outline btn-primary btn-sm w-full mt-4 gap-2">
-              <UserPlus size={16} />
-              Nuevo Pasajero
-            </button>
           </div>
         </div>
       </div>
