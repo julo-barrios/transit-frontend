@@ -62,7 +62,14 @@ export const MOCK_FACTURAS: FacturaExtended[] = [
     acreditada: true,
     fecha_acreditacion: "2023-11-10", // Tardó 3 meses
     estado: "Enviada",
-    // ... resto de campos
+    fecha_cai: "2023-11-10",
+    cai: "1234567890",
+    letra: "A",
+    sucursal: "1",
+    numero: "123456",
+    nro_ad: "450",
+    pdf_path: "",
+    created_at: ""
   },
   {
     id: 2,
@@ -73,7 +80,14 @@ export const MOCK_FACTURAS: FacturaExtended[] = [
     acreditada: true,
     fecha_acreditacion: "2023-12-15",
     estado: "Enviada",
-    // ...
+    fecha_cai: "2023-12-15",
+    cai: "1234567890",
+    letra: "A",
+    sucursal: "1",
+    numero: "123456",
+    nro_ad: "450",
+    pdf_path: "",
+    created_at: ""
   },
   {
     id: 3,
@@ -83,6 +97,13 @@ export const MOCK_FACTURAS: FacturaExtended[] = [
     kilometros: 160,
     acreditada: false, // Aún no cobrada
     estado: "Enviada",
-    // ...
+    fecha_cai: "2023-12-15",
+    cai: "1234567890",
+    letra: "A",
+    sucursal: "1",
+    numero: "123456",
+    nro_ad: "450",
+    pdf_path: "",
+    created_at: ""
   }
 ];
