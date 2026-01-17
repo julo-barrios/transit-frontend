@@ -19,7 +19,21 @@ const Facturas = () => {
   const [statusFilter, setStatusFilter] = useState("Todos");
   const [osFilter, setOsFilter] = useState("Todas"); // Nuevo estado para Obra Social
 
-  const [facturas] = useState(MOCK_FACTURAS);
+  const [facturas, setFacturas] = useState(MOCK_FACTURAS);
+
+  const handleAcreditar = (id: number) => {
+    if (!window.confirm("¿Confirmas que esta factura ha sido acreditada?")) return;
+
+    // Simular llamada al backend
+    setTimeout(() => {
+      const fechaHoy = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      setFacturas(prev => prev.map(f =>
+        f.id === id
+          ? { ...f, acreditada: true, fecha_acreditacion: fechaHoy }
+          : f
+      ));
+    }, 500);
+  };
 
   // Lógica de filtrado avanzada
   const facturasFiltradas = facturas.filter(f => {
@@ -167,11 +181,7 @@ const Facturas = () => {
                           <button
                             className="btn btn-success btn-xs gap-1 text-white shadow-sm mr-2"
                             title="Marcar como acreditada"
-                            onClick={() => {
-                              if (window.confirm("¿Confirmas que esta factura ha sido acreditada?")) {
-                                console.log("Factura acreditada:", f.id);
-                              }
-                            }}
+                            onClick={() => handleAcreditar(f.id)}
                           >
                             <CheckCircle2 size={12} /> Acreditar
                           </button>

@@ -11,7 +11,6 @@ import {
     Clock,
     AlertCircle,
     Building2,
-    MapPin,
     Download
 } from "lucide-react";
 import type { FacturaExtended } from "../../mocks/Data";
@@ -158,8 +157,8 @@ const FacturaDetalle = () => {
                             <div className="card-body p-6">
                                 <h3 className="font-bold mb-4">Historial de Eventos</h3>
                                 <ul className="steps steps-vertical text-sm">
-                                    <li className="step step-primary">Generación de borrar ({factura.fecha_factura})</li>
-                                    <li className="step step-primary">Autorización ARCA</li>
+                                    <li className="step step-primary">Peticion de factura ({factura.fecha_factura})</li>
+                                    <li className="step step-primary">Factura generada</li>
                                     <li className="step step-primary">Envío a {pasajero?.obra_social?.nombre}</li>
                                     <li className={`step ${factura.acreditada ? 'step-primary' : ''}`}>
                                         {factura.acreditada ? `Acreditada (${factura.fecha_acreditacion})` : "Pendiente de Pago"}
@@ -167,17 +166,7 @@ const FacturaDetalle = () => {
                                 </ul>
                             </div>
                         </div>
-
-                        {/* Info Adicional */}
-                        <div className="alert bg-base-200/50 shadow-sm text-xs">
-                            <MapPin size={16} className="text-primary" />
-                            <div>
-                                <h4 className="font-bold">Sucursal Emisora</h4>
-                                <p>Sucursal {factura.sucursal} - Casa Central</p>
-                            </div>
-                        </div>
                     </div>
-
                 </div>
             </div>
         </PageLayout>
