@@ -6,6 +6,7 @@ export interface PasajeroListItem {
   cuil: string;
   fecha_nacimiento: string;
   created_at: NullableDate;
+  ultimo_periodo?: string | null;
 }
 
 export interface NullableDate {

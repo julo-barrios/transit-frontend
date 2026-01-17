@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MOCK_PASAJEROS } from "../../mocks/Data";
+import { MOCK_PASAJEROS_DETALLADO } from "../../mocks/Data";
 import type { PasajeroListItem } from "../../types";
 import PageLayout from "../../components/PageLayout";
 import { Link } from "react-router-dom";
@@ -11,7 +11,7 @@ const PasajerosTable = () => {
   useEffect(() => {
     // Simular carga
     const timer = setTimeout(() => {
-      setPasajeros(MOCK_PASAJEROS as unknown as PasajeroListItem[]);
+      setPasajeros(MOCK_PASAJEROS_DETALLADO as unknown as PasajeroListItem[]);
       setLoading(false);
     }, 500);
     return () => clearTimeout(timer);
@@ -29,6 +29,7 @@ const PasajerosTable = () => {
               <th><input type="checkbox" className="checkbox" /></th>
               <th>Nombre</th>
               <th>Obra Social</th>
+              <th>Último Periodo</th>
               <th>Fecha de creacion</th>
               <th></th>
               <th></th>
@@ -54,6 +55,7 @@ const PasajerosTable = () => {
                 <td>
                   <span className="badge badge-primary badge-sm">{(p as any).obra_social?.nombre || "N/A"}</span>
                 </td>
+                <td>{p.ultimo_periodo || "-"}</td>
                 <td>{new Date(p.created_at.Time).toLocaleDateString()}</td>
                 <th>
                   <Link to={`/pasajeros/${p.cuil}`} className="btn btn-ghost btn-xs">

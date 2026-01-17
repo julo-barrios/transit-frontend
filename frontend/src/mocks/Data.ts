@@ -109,12 +109,15 @@ export const MOCK_FACTURAS: FacturaExtended[] = [
 ];
 
 // 4. Mock Agregado (Pasajeros con sus Facturas)
-// Esto simula la respuesta de un endpoint como GET /pasajeros/{id} o GET /pasajeros?_embed=facturas
 export const MOCK_PASAJEROS_DETALLADO = MOCK_PASAJEROS.map(pasajero => {
   const facturasDelPasajero = MOCK_FACTURAS.filter(f => f.nro_ad === pasajero.numero_ad.toString());
+  const ultimoPeriodo = facturasDelPasajero.length > 0 
+    ? facturasDelPasajero[facturasDelPasajero.length - 1].periodo_desde 
+    : null;
 
   return {
     ...pasajero,
-    facturas: facturasDelPasajero
+    facturas: facturasDelPasajero,
+    ultimo_periodo: ultimoPeriodo
   };
 });
