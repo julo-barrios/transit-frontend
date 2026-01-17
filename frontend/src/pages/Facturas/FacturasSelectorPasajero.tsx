@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import PageLayout from "../../components/Layout/PageLayout";
 import { getObrasSociales } from "../../services/pasajeros";
 //import type { ObraSocial, PasajeroListItem } from "../../types";
@@ -9,15 +9,11 @@ import { MOCK_OBRAS_SOCIALES, MOCK_PASAJEROS } from "../../mocks/Data";
 
 export default function FacturaSelectorPasajero() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   //   const [obrasSociales, setObrasSociales] = useState<ObraSocial[]>([]);
   //   const [pasajeros, setPasajeros] = useState<PasajeroListItem[]>([]);
   const [obrasSociales] = useState(MOCK_OBRAS_SOCIALES);
   const [pasajeros] = useState(MOCK_PASAJEROS);
-
-  // Initialize from URL or default to empty
-  const [selectedOS, setSelectedOS] = useState<string>(searchParams.get("obraSocial") || "");
-
+  const [selectedOS, setSelectedOS] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
 

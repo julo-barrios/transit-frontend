@@ -64,7 +64,7 @@ export default function WorkloadStatus() {
                         <div
                             key={idx}
                             className="p-4 rounded-2xl border border-base-200 hover:border-primary/50 hover:shadow-md transition-all cursor-pointer bg-base-50/30 group"
-                            onClick={() => navigate(`/facturas/nueva?obraSocial=${encodeURIComponent(item.nombre)}`)}
+                            onClick={() => navigate('/facturas/nueva')}
                         >
                             <div className="flex justify-between items-start mb-2">
                                 <span className="text-[10px] font-black uppercase opacity-60 group-hover:text-primary">{item.nombre}</span>
