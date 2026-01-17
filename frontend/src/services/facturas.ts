@@ -24,5 +24,11 @@ export const facturasService = {
     await delay(1000);
     console.log("Mock create invoice:", data);
     return { id: Math.floor(Math.random() * 10000), ...data };
+  },
+
+  update: async (id: number, updates: any) => {
+    await delay(500);
+    console.log(`Mock update invoice ${id}:`, updates);
+    return { id, ...updates };
   }
 };

@@ -14,6 +14,8 @@ import { Link } from "react-router-dom";
 import TableToolbar from "@/components/TableToolbar";
 import ObraSocialFilter from "@/components/ObraSocialFilter";
 import { MOCK_FACTURAS, MOCK_PASAJEROS } from "@/mocks/Data";
+import { facturasService } from "@/services/facturas";
+import ConfirmationModal from "@/components/ConfirmationModal";
 
 const Facturas = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -22,18 +24,31 @@ const Facturas = () => {
 
   const [facturas, setFacturas] = useState(MOCK_FACTURAS);
 
-  const handleAcreditar = (id: number) => {
-    if (!window.confirm("¿Confirmas que esta factura ha sido acreditada?")) return;
+  const [confirmationModal, setConfirmationModal] = useState<{ isOpen: boolean; invoiceId: number | null }>({
+    isOpen: false,
+    invoiceId: null
+  });
 
-    // Simular llamada al backend
-    setTimeout(() => {
+  const handleAcreditar = (id: number) => {
+    setConfirmationModal({ isOpen: true, invoiceId: id });
+  };
+
+  const confirmAccreditation = async () => {
+    if (!confirmationModal.invoiceId) return;
+    const id = confirmationModal.invoiceId;
+
+    try {
+      await facturasService.update(id, { acreditada: true });
       const fechaHoy = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
       setFacturas(prev => prev.map(f =>
         f.id === id
           ? { ...f, acreditada: true, fecha_acreditacion: fechaHoy }
           : f
       ));
-    }, 500);
+    } catch (error) {
+      console.error("Error al acreditar factura:", error);
+      alert("Hubo un error al acreditar la factura.");
+    }
   };
 
   // Lógica de filtrado avanzada
@@ -194,6 +209,13 @@ const Facturas = () => {
           )}
         </div>
       </div>
+      <ConfirmationModal
+        isOpen={confirmationModal.isOpen}
+        onClose={() => setConfirmationModal({ isOpen: false, invoiceId: null })}
+        onConfirm={confirmAccreditation}
+        title="Confirmar Acreditación"
+        message="¿Estás seguro de que deseas marcar esta factura como acreditada? Esta acción no se puede deshacer."
+      />
     </PageLayout>
   );
 };

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import PageLayout from "../../components/Layout/PageLayout";
 import { MOCK_FACTURAS, MOCK_PASAJEROS } from "../../mocks/Data";
+import { facturasService } from "../../services/facturas";
 import {
     ArrowLeft,
     FileText,
@@ -13,6 +14,7 @@ import {
     Building2,
     Download
 } from "lucide-react";
+import ConfirmationModal from "../../components/ConfirmationModal";
 import type { FacturaExtended } from "../../mocks/Data";
 import type { Pasajero } from "../../types";
 
@@ -54,6 +56,22 @@ const FacturaDetalle = () => {
         }
     };
 
+    const [showConfirmation, setShowConfirmation] = useState(false);
+
+    const handleAccredit = () => {
+        setShowConfirmation(true);
+    };
+
+    const confirmAccreditation = async () => {
+        if (!factura) return;
+        try {
+            await facturasService.update(factura.id, { acreditada: true });
+            setFactura(prev => prev ? { ...prev, acreditada: true, fecha_acreditacion: new Date().toISOString() } : null);
+        } catch (error) {
+            console.error("Error al acreditar:", error);
+        }
+    };
+
     return (
         <PageLayout
             title={`Factura ${factura.letra} ${factura.sucursal}-${factura.numero}`}
@@ -77,6 +95,16 @@ const FacturaDetalle = () => {
                     </div>
                     <div className="flex items-center gap-4">
                         {renderStatusBadge(factura.estado)}
+
+                        {!factura.acreditada && factura.estado === "Enviada" && (
+                            <button
+                                onClick={handleAccredit}
+                                className="btn btn-success btn-sm text-white font-bold gap-2"
+                            >
+                                <CheckCircle2 size={16} /> Acreditar
+                            </button>
+                        )}
+
                         {/* Mock Download Button - No PDF generation */}
                         <button className="btn btn-square btn-ghost border border-base-300" title="Descargar PDF (Mock)">
                             <Download size={20} />
@@ -169,6 +197,13 @@ const FacturaDetalle = () => {
                     </div>
                 </div>
             </div>
+            <ConfirmationModal
+                isOpen={showConfirmation}
+                onClose={() => setShowConfirmation(false)}
+                onConfirm={confirmAccreditation}
+                title="Confirmar Acreditación"
+                message="¿Estás seguro de que deseas marcar esta factura como acreditada?"
+            />
         </PageLayout>
     );
 };

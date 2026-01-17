@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { calcularDiasTranscurridos } from "../../utils/helpers";
+import { useState } from "react";
 
 interface PendingAccreditationItemProps {
     item: {
@@ -14,10 +15,18 @@ interface PendingAccreditationItemProps {
             obra_social: string;
         };
     };
+    onAccredit: (id: number) => Promise<void>;
 }
 
-export default function PendingAccreditationItem({ item }: PendingAccreditationItemProps) {
+export default function PendingAccreditationItem({ item, onAccredit }: PendingAccreditationItemProps) {
     const dias = calcularDiasTranscurridos(item.fecha_factura);
+    const [loading, setLoading] = useState(false);
+
+    const handleAccredit = async () => {
+        setLoading(true);
+        await onAccredit(item.id);
+        setLoading(false);
+    };
 
     return (
         <div className="p-3 rounded-xl border border-base-200 hover:border-primary/30 transition-all bg-base-50/50 group">
@@ -45,9 +54,13 @@ export default function PendingAccreditationItem({ item }: PendingAccreditationI
                 >
                     Ver Factura
                 </Link>
-                <Link to={`/facturas`} className="btn btn-success btn-xs flex-1 text-white text-[10px] font-bold">
-                    Acreditar
-                </Link>
+                <button
+                    onClick={handleAccredit}
+                    disabled={loading}
+                    className="btn btn-success btn-xs flex-1 text-white text-[10px] font-bold"
+                >
+                    {loading ? <span className="loading loading-spinner loading-xs"></span> : "Acreditar"}
+                </button>
             </div>
         </div>
     );
