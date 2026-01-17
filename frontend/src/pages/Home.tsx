@@ -7,20 +7,25 @@ import FinancialChart from "../components/dashboard/FinancialChart";
 import WorkloadStatus from "../components/dashboard/WorkloadStatus";
 import AccreditationPending from "../components/dashboard/AccreditationPending";
 import CriticalPending from "../components/dashboard/CriticalPending";
-import { MOCK_PASAJEROS } from "../mocks/Data";
-import type { PasajeroListItem } from "../types";
+import { dashboardService } from "../services/dashboard";
+import type { DashboardMetricsData } from "../components/dashboard/DashboardMetrics";
 
 export default function Home() {
-  const [pasajeros, setPasajeros] = useState<PasajeroListItem[]>([]);
+  const [metrics, setMetrics] = useState<DashboardMetricsData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulación de carga (en producción usaría fetch)
-    const timer = setTimeout(() => {
-      setPasajeros(MOCK_PASAJEROS as unknown as PasajeroListItem[]);
-      setLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
+    const fetchDashboardData = async () => {
+      try {
+        const data = await dashboardService.getMetrics();
+        setMetrics(data);
+      } catch (error) {
+        console.error("Error fetching dashboard metrics:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDashboardData();
   }, []);
 
   return (
@@ -34,7 +39,7 @@ export default function Home() {
       }
     >
       {/* 1. KPIs */}
-      <DashboardMetrics pasajeros={pasajeros} loading={loading} />
+      <DashboardMetrics metrics={metrics} loading={loading} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">

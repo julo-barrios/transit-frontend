@@ -9,16 +9,18 @@ import {
     ResponsiveContainer,
     Legend
 } from 'recharts';
-
-const dataGraficoHistorico = [
-    { name: 'Ago', facturado: 85000, acreditado: 85000 },
-    { name: 'Sep', facturado: 92000, acreditado: 92000 },
-    { name: 'Oct', facturado: 75000, acreditado: 0 },
-    { name: 'Nov', facturado: 110000, acreditado: 0 },
-    { name: 'Dic', facturado: 98000, acreditado: 0 },
-];
+import { useEffect, useState } from "react";
+import { dashboardService } from "../../services/dashboard";
 
 export default function FinancialChart() {
+    const [data, setData] = useState<{ name: string; facturado: number; acreditado: number }[]>([]);
+
+    useEffect(() => {
+        dashboardService.getFinancialHistory().then(setData);
+    }, []);
+
+    if (!data.length) return <div className="h-80 w-full flex items-center justify-center"><span className="loading loading-spinner loading-lg"></span></div>;
+
     return (
         <div className="card bg-base-100 border border-base-200 p-6 shadow-sm">
             <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
@@ -27,7 +29,7 @@ export default function FinancialChart() {
             </h3>
             <div className="h-80 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={dataGraficoHistorico} barGap={8}>
+                    <BarChart data={data} barGap={8}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                         <XAxis dataKey="name" axisLine={false} tickLine={false} />
                         <YAxis axisLine={false} tickLine={false} hide />

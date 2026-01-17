@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getObrasSociales, createPasajero } from "../../services/pasajeros";
+import { pasajerosService } from "../../services/pasajeros";
+import { obrasSocialesService } from "../../services/obrasSociales";
 
 export default function PasajeroCrear() {
   const navigate = useNavigate();
@@ -10,13 +11,13 @@ export default function PasajeroCrear() {
   const [obrasSociales, setObrasSociales] = useState<{ id: number; nombre: string }[]>([]);
 
   useEffect(() => {
-    getObrasSociales().then(setObrasSociales);
+    obrasSocialesService.getAll().then((data) => setObrasSociales(data as any));
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!obraSocialId) return;
-    await createPasajero({ nombre, apellido, obra_social_id: obraSocialId });
+    await pasajerosService.create({ nombre, apellido, obra_social_id: obraSocialId });
     navigate("/pasajeros");
   };
 

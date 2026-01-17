@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Building2, CalendarDays } from "lucide-react";
-import { MOCK_PASAJEROS, MOCK_FACTURAS, MOCK_OBRAS_SOCIALES } from "../../mocks/Data";
+import { dashboardService } from "../../services/dashboard";
 
 export default function WorkloadStatus() {
     const navigate = useNavigate();
-    const PERIODO_ACTUAL = "2023-12";
     const [periodoEstadoCarga, setPeriodoEstadoCarga] = useState("2023-12");
+    const [statsObrasSociales, setStatsObrasSociales] = useState<any[]>([]); // Using any for fast iteration on mocks
+    const [loading, setLoading] = useState(true);
 
     const opcionesPeriodos = [
         { value: "2023-12", label: "Diciembre 2023" },
@@ -14,27 +15,29 @@ export default function WorkloadStatus() {
         { value: "2023-10", label: "Octubre 2023" },
     ];
 
-    const statsObrasSociales = MOCK_OBRAS_SOCIALES.map(os => {
-        const pasajerosDeEstaOS = MOCK_PASAJEROS.filter(p => p.obra_social?.nombre === os.nombre);
-        const totalPasajeros = pasajerosDeEstaOS.length;
-
-        const facturasCargadas = pasajerosDeEstaOS.filter(p =>
-            MOCK_FACTURAS.some(f =>
-                f.nro_ad === p.numero_ad.toString() &&
-                f.periodo_desde.startsWith(PERIODO_ACTUAL)
-            )
-        ).length;
-
-        const faltantes = totalPasajeros - facturasCargadas;
-
-        return {
-            nombre: os.nombre,
-            completado: facturasCargadas,
-            total: totalPasajeros,
-            faltante: faltantes,
-            color: faltantes > 0 ? (faltantes > 2 ? "progress-error" : "progress-warning") : "progress-success"
+    useEffect(() => {
+        const loadStats = async () => {
+            try {
+                // In a real app we would pass the period to the service
+                const data = await dashboardService.getWorkloadStatus();
+                // Map the simple service data to the UI needs (calculating colors etc)
+                const processed = data.map((item: any) => {
+                    const faltantes = item.total - item.completado;
+                    return {
+                        ...item,
+                        faltante: faltantes,
+                        color: faltantes > 0 ? (faltantes > 2 ? "progress-error" : "progress-warning") : "progress-success"
+                    };
+                });
+                setStatsObrasSociales(processed);
+            } catch (error) {
+                console.error("Error loading workload:", error);
+            } finally {
+                setLoading(false);
+            }
         };
-    }).sort((a, b) => b.faltante - a.faltante);
+        loadStats();
+    }, [periodoEstadoCarga]);
 
     return (
         <div className="card bg-base-100 border border-base-200 shadow-sm">
@@ -60,11 +63,11 @@ export default function WorkloadStatus() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {statsObrasSociales.map((item, idx) => (
+                    {loading ? <div className="col-span-3 text-center py-8"><span className="loading loading-spinner"></span></div> : statsObrasSociales.map((item, idx) => (
                         <div
                             key={idx}
                             className="p-4 rounded-2xl border border-base-200 hover:border-primary/50 hover:shadow-md transition-all cursor-pointer bg-base-50/30 group"
-                            onClick={() => navigate('/facturas/nueva')}
+                            onClick={() => navigate(`/facturas/nueva?obraSocial=${encodeURIComponent(item.nombre)}`)}
                         >
                             <div className="flex justify-between items-start mb-2">
                                 <span className="text-[10px] font-black uppercase opacity-60 group-hover:text-primary">{item.nombre}</span>

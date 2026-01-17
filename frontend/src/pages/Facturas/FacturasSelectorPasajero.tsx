@@ -1,19 +1,20 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import PageLayout from "../../components/Layout/PageLayout";
-import { getObrasSociales } from "../../services/pasajeros";
-//import type { ObraSocial, PasajeroListItem } from "../../types";
+import { obrasSocialesService } from "../../services/obrasSociales";
+import { pasajerosService } from "../../services/pasajeros";
+import type { ObraSocial, Pasajero } from "../../types";
 import { Building2, User, ArrowRight, Search } from "lucide-react";
-import { MOCK_OBRAS_SOCIALES, MOCK_PASAJEROS } from "../../mocks/Data";
 // ... en el componente:
 
 export default function FacturaSelectorPasajero() {
   const navigate = useNavigate();
-  //   const [obrasSociales, setObrasSociales] = useState<ObraSocial[]>([]);
-  //   const [pasajeros, setPasajeros] = useState<PasajeroListItem[]>([]);
-  const [obrasSociales] = useState(MOCK_OBRAS_SOCIALES);
-  const [pasajeros] = useState(MOCK_PASAJEROS);
-  const [selectedOS, setSelectedOS] = useState<string>("");
+  const [searchParams] = useSearchParams();
+  const [obrasSociales, setObrasSociales] = useState<ObraSocial[]>([]);
+  const [pasajeros, setPasajeros] = useState<Pasajero[]>([]);
+
+  // Initialize from URL or default to empty
+  const [selectedOS, setSelectedOS] = useState<string>(searchParams.get("obraSocial") || "");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -21,11 +22,11 @@ export default function FacturaSelectorPasajero() {
     const loadData = async () => {
       try {
         const [osData, pasData] = await Promise.all([
-          getObrasSociales(),
-          fetch('/api/v1/pasajeros').then(res => res.json())
+          obrasSocialesService.getAll(),
+          pasajerosService.getAll()
         ]);
-        //setObrasSociales(osData);
-        //setPasajeros(pasData);
+        setObrasSociales(osData); // Now using the service data
+        setPasajeros(pasData);
       } catch (err) {
         console.error("Error cargando selectores:", err);
       } finally {
@@ -35,9 +36,19 @@ export default function FacturaSelectorPasajero() {
     loadData();
   }, []);
 
-  // Filtrado lógico
+  // Sync URL with State
+  useEffect(() => {
+    const osFromUrl = searchParams.get("obraSocial");
+    if (osFromUrl) {
+      setSelectedOS(osFromUrl);
+    }
+  }, [searchParams]);
+
   const pasajerosFiltrados = pasajeros.filter(p => {
-    const matchesOS = selectedOS === "" || p.obra_social?.nombre === selectedOS;
+    // Handle both object and string (legacy/mock) types safely
+    const osName = typeof p.obra_social === 'string' ? p.obra_social : p.obra_social?.nombre;
+
+    const matchesOS = selectedOS === "" || osName === selectedOS;
     const matchesSearch = (p.nombre + " " + p.apellido).toLowerCase().includes(searchTerm.toLowerCase()) || p.cuil.includes(searchTerm);
     return matchesOS && matchesSearch;
   });

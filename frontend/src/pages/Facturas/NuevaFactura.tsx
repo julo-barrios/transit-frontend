@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import PageLayout from "../../components/Layout/PageLayout";
 import {
   Calculator,
@@ -16,8 +16,15 @@ import { MOCK_PASAJEROS } from "../../mocks/Data";
 // Esto idealmente vendría de una configuración en la DB
 const PRECIO_KM_DEFAULT = 450;
 
+const PERIOD_MAPPING: Record<string, string> = {
+  "Dic2023": "2023-12",
+  "Nov2023": "2023-11",
+  "Oct2023": "2023-10"
+};
+
 const NuevaFactura = () => {
   const { pasajeroId } = useParams<{ pasajeroId: string }>();
+  const [searchParams] = useSearchParams();
   // En MOCK_PASAJEROS el id es number, pero useParams trae string. 
   // Sin embargo, en el router usamos :pasajeroId, pero en Pasajeros.tsx usamos :cuil para navegar.
   // Revisemos el componente anterior. PasajeroDetalle usa :id para el link: `/pasajeros/${pasajero.id}/facturas/nueva`
@@ -42,6 +49,13 @@ const NuevaFactura = () => {
       }
     }
   }, [pasajeroId]);
+
+  useEffect(() => {
+    const periodoParam = searchParams.get("periodo");
+    if (periodoParam && PERIOD_MAPPING[periodoParam]) {
+      setForm(prev => ({ ...prev, periodo: PERIOD_MAPPING[periodoParam] }));
+    }
+  }, [searchParams]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, files } = e.target as any;
@@ -137,6 +151,7 @@ const NuevaFactura = () => {
                 name="periodo"
                 className="select select-bordered select-lg w-full"
                 onChange={handleChange}
+                value={form.periodo}
                 required
               >
                 <option value="">Seleccionar Mes...</option>

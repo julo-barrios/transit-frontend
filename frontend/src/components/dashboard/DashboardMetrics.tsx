@@ -1,15 +1,25 @@
 import { Users, TrendingUp, Clock, DollarSign, Wallet } from "lucide-react";
-import type { PasajeroListItem } from "../../types";
+// import type { PasajeroListItem } from "../../types";
+
+export interface DashboardMetricsData {
+    activePassengers: number;
+    estimatedRevenue: number;
+    pendingCollection: number;
+    invoicesStatus: {
+        loaded: number;
+        goal: number;
+    };
+}
 
 interface DashboardMetricsProps {
-    pasajeros: PasajeroListItem[];
+    metrics: DashboardMetricsData | null;
     loading: boolean;
 }
 
-export default function DashboardMetrics({ pasajeros, loading }: DashboardMetricsProps) {
-    // Mock Data calculations
-    const facturasCargadas = 70;
-    const objetivoFacturas = 150;
+export default function DashboardMetrics({ metrics, loading }: DashboardMetricsProps) {
+    // Default / Loading State
+    const facturasCargadas = metrics?.invoicesStatus.loaded || 0;
+    const objetivoFacturas = metrics?.invoicesStatus.goal || 1;
     const porcentajeCargadas = Math.round((facturasCargadas / objetivoFacturas) * 100);
 
     return (
@@ -41,7 +51,9 @@ export default function DashboardMetrics({ pasajeros, loading }: DashboardMetric
                 <div className="stat">
                     <div className="stat-figure text-warning"><Wallet size={24} /></div>
                     <div className="stat-title text-xs uppercase font-bold opacity-60">Pendiente de Cobro</div>
-                    <div className="stat-value text-warning">$283k</div>
+                    <div className="stat-value text-warning">
+                        {loading ? "..." : `$${(metrics?.pendingCollection || 0).toLocaleString()}`}
+                    </div>
                     <div className="stat-desc font-medium">Requiere atención</div>
                 </div>
             </div>
@@ -51,7 +63,7 @@ export default function DashboardMetrics({ pasajeros, loading }: DashboardMetric
                 <div className="stat">
                     <div className="stat-figure text-secondary"><Users size={24} /></div>
                     <div className="stat-title text-xs uppercase font-bold opacity-60">Pasajeros Activos</div>
-                    <div className="stat-value text-secondary">{loading ? "..." : pasajeros.length}</div>
+                    <div className="stat-value text-secondary">{loading ? "..." : metrics?.activePassengers || 0}</div>
                     <div className="stat-desc">4 nuevos este mes</div>
                 </div>
             </div>
@@ -59,10 +71,12 @@ export default function DashboardMetrics({ pasajeros, loading }: DashboardMetric
             {/* 4. Facturas Cargadas (Productivity) - Circle Widget Hybrid */}
             <div className="stats shadow bg-base-100 border border-base-200">
                 <div className="stat">
-                    <div className="stat-figure text-primary"><DollarSign size={24} /></div>
-                    <div className="stat-title text-xs uppercase font-bold opacity-60">Facturación Estimada</div>
-                    <div className="stat-value text-primary">$845k</div>
-                    <div className="stat-desc">↗︎ 12% vs mes anterior</div>
+                    <div className="stat-figure text-primary-content/50"><DollarSign size={24} /></div>
+                    <div className="stat-title text-primary-content/70 text-xs uppercase font-bold tracking-wider">Facturación Estimada</div>
+                    <div className="stat-value text-3xl">
+                        {loading ? "..." : `$${(metrics?.estimatedRevenue || 0).toLocaleString()}`}
+                    </div>
+                    <div className="stat-desc text-primary-content/80 font-bold">↗︎ 12% vs mes anterior</div>
                 </div>
             </div>
         </div>
