@@ -1,7 +1,6 @@
 import { useState } from "react";
 import PageLayout from "../../components/PageLayout";
 import {
-  Search,
   Filter,
   Download,
   Eye,
@@ -12,6 +11,8 @@ import {
   Building2
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import TableToolbar from "../../components/TableToolbar";
+import ObraSocialFilter from "../../components/ObraSocialFilter";
 import { MOCK_FACTURAS, MOCK_PASAJEROS, MOCK_OBRAS_SOCIALES } from "../../mocks/Data";
 
 const Facturas = () => {
@@ -74,51 +75,30 @@ const Facturas = () => {
     >
       <div className="space-y-6">
         {/* Barra de Herramientas Mejorada */}
-        <div className="flex flex-col lg:flex-row gap-4 justify-between items-center bg-base-200/30 p-4 rounded-xl border border-base-200">
-          {/* Buscador */}
-          <div className="relative w-full lg:flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 opacity-30" size={18} />
-            <input
-              type="text"
-              placeholder="Buscar por pasajero o N° factura..."
-              className="input input-bordered w-full pl-10 focus:border-primary"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+        {/* Barra de Herramientas Mejorada */}
+        <TableToolbar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          placeholder="Buscar por pasajero o N° factura..."
+        >
+          {/* Filtro Obra Social (NUEVO) */}
+          <ObraSocialFilter value={osFilter} onChange={setOsFilter} />
 
-          <div className="flex flex-col md:flex-row gap-3 w-full lg:w-auto">
-            {/* Filtro Obra Social (NUEVO) */}
-            <div className="flex items-center gap-2 bg-base-100 px-3 py-1 rounded-lg border border-base-300">
-              <Building2 size={16} className="opacity-50 text-primary" />
-              <select
-                className="select select-ghost select-sm focus:bg-transparent font-medium"
-                value={osFilter}
-                onChange={(e) => setOsFilter(e.target.value)}
-              >
-                <option value="Todas">Todas las Obras Sociales</option>
-                {MOCK_OBRAS_SOCIALES.map(os => (
-                  <option key={os.id} value={os.nombre}>{os.nombre}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Filtro Estado */}
-            <div className="flex items-center gap-2 bg-base-100 px-3 py-1 rounded-lg border border-base-300">
-              <Filter size={16} className="opacity-50" />
-              <select
-                className="select select-ghost select-sm focus:bg-transparent font-medium"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-              >
-                <option value="Todos">Todos los estados</option>
-                <option value="Enviada">Enviadas</option>
-                <option value="Procesando ARCA">En Proceso</option>
-                <option value="Error">Con Error</option>
-              </select>
-            </div>
+          {/* Filtro Estado */}
+          <div className="flex items-center gap-2 bg-base-100 px-3 py-1 rounded-lg border border-base-300">
+            <Filter size={16} className="opacity-50" />
+            <select
+              className="select select-ghost select-sm focus:bg-transparent font-medium"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="Todos">Todos los estados</option>
+              <option value="Enviada">Enviadas</option>
+              <option value="Procesando ARCA">En Proceso</option>
+              <option value="Error">Con Error</option>
+            </select>
           </div>
-        </div>
+        </TableToolbar>
 
         {/* Tabla de Facturas */}
         <div className="overflow-x-auto">

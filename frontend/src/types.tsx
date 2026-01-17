@@ -2,7 +2,8 @@ export interface PasajeroListItem {
   id: number;
   nombre: string;
   apellido: string;
-  obra_social: string;
+  obra_social: ObraSocial | string;
+  numero_ad: number;
   cuil: string;
   fecha_nacimiento: string;
   created_at: NullableDate;
