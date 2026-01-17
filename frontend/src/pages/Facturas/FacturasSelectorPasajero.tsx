@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import PageLayout from "../../components/PageLayout";
 import { getObrasSociales } from "../../services/pasajeros";
 //import type { ObraSocial, PasajeroListItem } from "../../types";
@@ -9,11 +9,15 @@ import { MOCK_OBRAS_SOCIALES, MOCK_PASAJEROS } from "../../mocks/Data";
 
 export default function FacturaSelectorPasajero() {
   const navigate = useNavigate();
-//   const [obrasSociales, setObrasSociales] = useState<ObraSocial[]>([]);
-//   const [pasajeros, setPasajeros] = useState<PasajeroListItem[]>([]);
+  const [searchParams] = useSearchParams();
+  //   const [obrasSociales, setObrasSociales] = useState<ObraSocial[]>([]);
+  //   const [pasajeros, setPasajeros] = useState<PasajeroListItem[]>([]);
   const [obrasSociales] = useState(MOCK_OBRAS_SOCIALES);
   const [pasajeros] = useState(MOCK_PASAJEROS);
-  const [selectedOS, setSelectedOS] = useState<string>("");
+
+  // Initialize from URL or default to empty
+  const [selectedOS, setSelectedOS] = useState<string>(searchParams.get("obraSocial") || "");
+
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -51,7 +55,7 @@ export default function FacturaSelectorPasajero() {
             <label className="label font-bold text-xs uppercase opacity-60">1. Filtrar por Obra Social</label>
             <div className="join w-full">
               <div className="join-item btn btn-disabled bg-base-100 border-base-300"><Building2 size={18} /></div>
-              <select 
+              <select
                 className="select select-bordered join-item w-full"
                 value={selectedOS}
                 onChange={(e) => setSelectedOS(e.target.value)}
@@ -68,9 +72,9 @@ export default function FacturaSelectorPasajero() {
             <label className="label font-bold text-xs uppercase opacity-60">2. Buscar Pasajero</label>
             <div className="join w-full">
               <div className="join-item btn btn-disabled bg-base-100 border-base-300"><Search size={18} /></div>
-              <input 
-                type="text" 
-                placeholder="Nombre o CUIL..." 
+              <input
+                type="text"
+                placeholder="Nombre o CUIL..."
                 className="input input-bordered join-item w-full"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -87,7 +91,7 @@ export default function FacturaSelectorPasajero() {
           ) : (
             <div className="grid grid-cols-1 gap-2">
               {pasajerosFiltrados.map(p => (
-                <div 
+                <div
                   key={p.id}
                   onClick={() => navigate(`/pasajeros/${p.id}/facturas/nueva`)}
                   className="group flex items-center justify-between p-4 bg-base-100 border border-base-200 rounded-xl hover:border-primary hover:shadow-md transition-all cursor-pointer"
