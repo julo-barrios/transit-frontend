@@ -43,14 +43,12 @@ export default function Home() {
 
           {/* 3. WIDGET ESPECÍFICO: ESTADO DE CARGA */}
           <WorkloadStatus />
-
-          {/* NUEVO WIDGET: PENDIENTES DE ACREDITACIÓN */}
-          <AccreditationPending />
         </div>
 
-        {/* COLUMNA DERECHA: Pendientes Críticos */}
+        {/* COLUMNA DERECHA: Pendientes Críticos & Acreditación */}
         <div className="space-y-6">
           <CriticalPending />
+          <AccreditationPending />
         </div>
       </div>
     </PageLayout>

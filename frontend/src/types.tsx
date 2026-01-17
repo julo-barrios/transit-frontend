@@ -8,7 +8,7 @@ export interface PasajeroListItem {
   created_at: NullableDate;
 }
 
-export interface NullableDate{
+export interface NullableDate {
   Time: Date;
   Valid: boolean;
 }
@@ -42,4 +42,8 @@ export interface Factura {
   nro_ad: string;
   pdf_path: string;
   created_at: string;
+}
+
+export interface PasajeroDetail extends Pasajero {
+  facturas: Factura[];
 }

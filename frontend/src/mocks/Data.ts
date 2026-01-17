@@ -54,56 +54,67 @@ export interface FacturaExtended extends Factura {
 
 export const MOCK_FACTURAS: FacturaExtended[] = [
   {
-      id: 1,
-      fecha_factura: "2023-08-05",
-      periodo_desde: "2023-08",
-      importe_total: 85000,
-      kilometros: 180,
-      acreditada: true,
-      fecha_acreditacion: "2023-11-10", // Tardó 3 meses
-      estado: "Enviada",
-      fecha_cai: "2023-11-10",
-      cai: "1234567890",
-      letra: "A",
-      sucursal: "1",
-      numero: "123456",
-      nro_ad: "450",
-      pdf_path: "",
-      created_at: ""
+    id: 1,
+    fecha_factura: "2023-08-05",
+    periodo_desde: "2023-08",
+    importe_total: 85000,
+    kilometros: 180,
+    acreditada: true,
+    fecha_acreditacion: "2023-11-10", // Tardó 3 meses
+    estado: "Enviada",
+    fecha_cai: "2023-11-10",
+    cai: "1234567890",
+    letra: "A",
+    sucursal: "1",
+    numero: "123456",
+    nro_ad: "450",
+    pdf_path: "",
+    created_at: ""
   },
   {
-      id: 2,
-      fecha_factura: "2023-09-10",
-      periodo_desde: "2023-09",
-      importe_total: 92000,
-      kilometros: 205,
-      acreditada: true,
-      fecha_acreditacion: "2023-12-15",
-      estado: "Enviada",
-      fecha_cai: "2023-12-15",
-      cai: "1234567890",
-      letra: "A",
-      sucursal: "1",
-      numero: "123456",
-      nro_ad: "450",
-      pdf_path: "",
-      created_at: ""
+    id: 2,
+    fecha_factura: "2023-09-10",
+    periodo_desde: "2023-09",
+    importe_total: 92000,
+    kilometros: 205,
+    acreditada: true,
+    fecha_acreditacion: "2023-12-15",
+    estado: "Enviada",
+    fecha_cai: "2023-12-15",
+    cai: "1234567890",
+    letra: "A",
+    sucursal: "1",
+    numero: "123456",
+    nro_ad: "450",
+    pdf_path: "",
+    created_at: ""
   },
   {
-      id: 3,
-      fecha_factura: "2023-10-05",
-      periodo_desde: "2023-10",
-      importe_total: 75000,
-      kilometros: 160,
-      acreditada: false, // Aún no cobrada
-      estado: "Enviada",
-      fecha_cai: "  2023-12-15",
-      cai: "1234567890",
-      letra: "A",
-      sucursal: "1",
-      numero: "123456",
-      nro_ad: "450",
-      pdf_path: "",
-      created_at: ""
+    id: 3,
+    fecha_factura: "2023-10-05",
+    periodo_desde: "2023-10",
+    importe_total: 75000,
+    kilometros: 160,
+    acreditada: false, // Aún no cobrada
+    estado: "Enviada",
+    fecha_cai: "  2023-12-15",
+    cai: "1234567890",
+    letra: "A",
+    sucursal: "1",
+    numero: "123456",
+    nro_ad: "450",
+    pdf_path: "",
+    created_at: ""
   }
 ];
+
+// 4. Mock Agregado (Pasajeros con sus Facturas)
+// Esto simula la respuesta de un endpoint como GET /pasajeros/{id} o GET /pasajeros?_embed=facturas
+export const MOCK_PASAJEROS_DETALLADO = MOCK_PASAJEROS.map(pasajero => {
+  const facturasDelPasajero = MOCK_FACTURAS.filter(f => f.nro_ad === pasajero.numero_ad.toString());
+
+  return {
+    ...pasajero,
+    facturas: facturasDelPasajero
+  };
+});
