@@ -10,20 +10,27 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Building2
+  Building2,
+  LayoutDashboard,
+  Receipt
 } from "lucide-react";
 
-const Layout = ({ children }: { children: React.ReactNode }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false); // Estado para el menú
-  const location = useLocation();
+interface SidebarItem {
+  label: string;
+  path: string;
+  icon: React.ReactNode;
+}
 
-  // Dentro de los menuItems en Layout.tsx
-  const menuItems = [
-    { name: "Inicio", path: "/", icon: <Home size={20} /> },
-    { name: "Pasajeros", path: "/pasajeros", icon: <Users size={20} /> },
-    { name: "Obras Sociales", path: "/obras-sociales", icon: <Building2 size={20} /> },
-    { name: "Facturación", path: "/facturas", icon: <FileText size={20} /> },
-  ];
+const SIDEBAR_ITEMS: SidebarItem[] = [
+  { label: "Dashboard", path: "/", icon: <LayoutDashboard size={20} /> },
+  { label: "Pasajeros", path: "/pasajeros", icon: <Users size={20} /> },
+  { label: "Facturas", path: "/facturas", icon: <Receipt size={20} /> },
+  { label: "Obras Sociales", path: "/obras-sociales", icon: <Building2 size={20} /> },
+];
+
+const Layout = ({ children }: { children: React.ReactNode }) => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const location = useLocation();
 
   return (
     <div className="flex min-h-screen bg-base-200/50">
@@ -43,30 +50,33 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               </p>
             )}
             <ul className="space-y-2">
-              {menuItems.map((item) => (
-                <li key={item.path}>
-                  <Link
-                    to={item.path}
-                    className={`
-                      flex items-center gap-4 py-3 rounded-xl transition-all group
-                      ${isCollapsed ? "justify-center px-0" : "px-4"}
-                      ${location.pathname === item.path
-                        ? "bg-primary text-primary-content shadow-lg shadow-primary/20"
-                        : "hover:bg-base-200 text-base-content/70"}
-                    `}
-                  >
-                    <div className="shrink-0">{item.icon}</div>
-                    {!isCollapsed && <span className="font-semibold whitespace-nowrap">{item.name}</span>}
+              {SIDEBAR_ITEMS.map((item) => {
+                const isActive = location.pathname === item.path || (item.path !== "/" && location.pathname.startsWith(item.path));
+                return (
+                  <li key={item.path}>
+                    <Link
+                      to={item.path}
+                      className={`
+                        flex items-center gap-4 py-3 rounded-xl transition-all group
+                        ${isCollapsed ? "justify-center px-0" : "px-4"}
+                        ${isActive
+                          ? "bg-primary text-primary-content shadow-lg shadow-primary/20"
+                          : "hover:bg-base-200 text-base-content/70"}
+                        `}
+                    >
+                      <div className="shrink-0">{item.icon}</div>
+                      {!isCollapsed && <span className="font-semibold whitespace-nowrap">{item.label}</span>}
 
-                    {/* Tooltip simple cuando está colapsado */}
-                    {isCollapsed && (
-                      <div className="absolute left-20 bg-neutral text-neutral-content px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[100]">
-                        {item.name}
-                      </div>
-                    )}
-                  </Link>
-                </li>
-              ))}
+                      {/* Tooltip simple cuando está colapsado */}
+                      {isCollapsed && (
+                        <div className="absolute left-20 bg-neutral text-neutral-content px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[100]">
+                          {item.label}
+                        </div>
+                      )}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
@@ -79,7 +89,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
         {/* Footer de la Sidebar */}
         <div className="p-4 border-t border-base-200 space-y-2">
-          <Link to="/config" className={`flex items-center gap-4 py-3 opacity-60 hover:opacity-100 ${isCollapsed ? "justify-center" : "px-4"}`}>
+          <Link to="/configuracion" className={`flex items-center gap-4 py-3 opacity-60 hover:opacity-100 ${isCollapsed ? "justify-center" : "px-4"}`}>
             <Settings size={20} />
             {!isCollapsed && <span className="text-sm font-medium">Configuración</span>}
           </Link>
@@ -118,7 +128,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </div>
         </header>
 
-        <main className="p-0 flex-1 overflow-x-hidden">
+        <main className="flex-1 overflow-x-hidden p-0">
           {children}
         </main>
       </div>
