@@ -10,11 +10,11 @@ export default function AccreditationPending() {
 
     return (
         <div className="card bg-base-100 border border-base-200 shadow-sm overflow-hidden">
-            <div className="bg-success/10 px-5 py-3 border-b border-success/10 flex justify-between items-center">
-                <h3 className="font-bold text-sm flex items-center gap-2 text-success-content">
-                    <CheckCircle2 size={16} /> Pendiente Acreditación
+            <div className="bg-error/10 px-5 py-3 border-b border-error/10 flex justify-between items-center">
+                <h3 className="font-bold text-sm flex items-center gap-2 text-error">
+                    <AlertCircle size={16} /> Pendiente Acreditación
                 </h3>
-                <span className="badge badge-success font-black text-[10px]">{facturasPendientesCobro.length} FACTURAS</span>
+                <span className="badge badge-error font-black text-[10px] text-white">{facturasPendientesCobro.length} FACTURAS</span>
             </div>
 
             <div className="card-body p-5">
