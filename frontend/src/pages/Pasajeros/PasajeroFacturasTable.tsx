@@ -1,16 +1,14 @@
 // PasajeroDetalle.tsx (parte de la sección de facturas)
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type { Factura } from "../../types";
-import { getFacturasByPasajeroId } from "../../services/facturas";
 
-const FacturasTable = ({ id }: { id: number }) => {
-  const [facturas, setFacturas] = useState<Factura[]>([]);
+const FacturasTable = ({ facturas }: { facturas: Factura[] }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const pageSize = 5;
 
-  useEffect(() => {
-    getFacturasByPasajeroId(id).then(setFacturas).catch(console.error);
-  }, [id]);
+  // useEffect(() => {
+  //   getFacturasByPasajeroId(id).then(setFacturas).catch(console.error);
+  // }, [id]);
   const startIndex = currentPage * pageSize;
   const endIndex = startIndex + pageSize;
   const totalPages = Math.ceil(facturas.length / pageSize);
@@ -53,26 +51,26 @@ const FacturasTable = ({ id }: { id: number }) => {
           </tbody>
         </table>
       </div>
-      <div className="flex justify-center mt-4">      
+      <div className="flex justify-center mt-4">
         <div className="join">
-            {Array.from({ length: totalPages }).map((_, index) => (
+          {Array.from({ length: totalPages }).map((_, index) => (
             <button
-                key={index}
-                className={`join-item btn ${currentPage === index ? "btn-active" : ""}`}
-                onClick={() => setCurrentPage(index)}
+              key={index}
+              className={`join-item btn ${currentPage === index ? "btn-active" : ""}`}
+              onClick={() => setCurrentPage(index)}
             >
-                {index + 1}
+              {index + 1}
             </button>
-            ))}
-            <button
-                key={2}
-                className={`join-item btn ${currentPage === 2 ? "btn-active" : ""}`}
-                onClick={() => setCurrentPage(2)}
-            >
-                {1 + 1}
-            </button>
+          ))}
+          <button
+            key={2}
+            className={`join-item btn ${currentPage === 2 ? "btn-active" : ""}`}
+            onClick={() => setCurrentPage(2)}
+          >
+            {1 + 1}
+          </button>
         </div>
-        </div>
+      </div>
     </div>
   );
 };

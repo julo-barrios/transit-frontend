@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import type  { PasajeroListItem } from "../../types";
+import { MOCK_PASAJEROS } from "../../mocks/Data";
+import type { PasajeroListItem } from "../../types";
 import PageLayout from "../../components/PageLayout";
 import { Link } from "react-router-dom";
 
@@ -8,27 +9,19 @@ const PasajerosTable = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPasajeros = async () => {
-      try {
-        const response = await fetch('/api/v1/pasajeros');
-        if (!response.ok) throw new Error("Error al cargar pasajeros");
-        const data = await response.json();
-        setPasajeros(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPasajeros();
+    // Simular carga
+    const timer = setTimeout(() => {
+      setPasajeros(MOCK_PASAJEROS as unknown as PasajeroListItem[]);
+      setLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
   }, []);
 
   if (loading) return <div className="text-center">Cargando pasajeros...</div>;
 
 
   return (
-    <PageLayout title = "Listado de pasajeros" breadcrumbs={["Home", "Pasajeros"]}>
+    <PageLayout title="Listado de pasajeros" breadcrumbs={["Home", "Pasajeros"]}>
       <div className="overflow-x-auto">
         <table className="table">
           <thead>
@@ -59,13 +52,13 @@ const PasajerosTable = () => {
                   </div>
                 </td>
                 <td>
-                  <span className="badge badge-primary badge-sm">{p.obra_social}OSECAC</span>
+                  <span className="badge badge-primary badge-sm">{(p as any).obra_social?.nombre || "N/A"}</span>
                 </td>
                 <td>{new Date(p.created_at.Time).toLocaleDateString()}</td>
                 <th>
                   <Link to={`/pasajeros/${p.cuil}`} className="btn btn-ghost btn-xs">
-                  detalles
-                </Link>
+                    detalles
+                  </Link>
 
                 </th>
               </tr>

@@ -1,21 +1,25 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import PageLayout from "../../components/PageLayout";
-import type { Pasajero } from "../../types";
+import { MOCK_PASAJEROS_DETALLADO } from "../../mocks/Data";
+import { type PasajeroDetail } from "../../types";
 import FacturasTable from "./PasajeroFacturasTable";
 
 const PasajeroDetalle = () => {
   const { cuil } = useParams<{ cuil: string }>();
-  const [pasajero, setPasajero] = useState<Pasajero | null>(null);
+  // Inicializamos a null pero tipamos como PasajeroDetail
+  const [pasajero, setPasajero] = useState<PasajeroDetail | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/v1/pasajeros/${cuil}`)
-      .then((res) => res.json())
-      .then((data) => setPasajero(data));
+    // Simular fetch encontrando por CUIL en el mock
+    const found = MOCK_PASAJEROS_DETALLADO.find(p => p.cuil === cuil);
+    if (found) {
+      setPasajero(found);
+    }
   }, [cuil]);
 
-  if (!pasajero) return <div className="p-4">Cargando pasajero...</div>;
+  if (!pasajero) return <div className="p-4">Cargando pasajero... (o no encontrado)</div>;
 
   return (
     <PageLayout
@@ -29,7 +33,7 @@ const PasajeroDetalle = () => {
             <div><span className="font-bold">Apellido:</span> {pasajero.apellido}</div>
             <div><span className="font-bold">CUIL:</span> {pasajero.cuil}</div>
             <div><span className="font-bold">Obra social:</span> {pasajero.obra_social?.nombre || "N/A"}</div>
-          
+
           </div>
           <div className="flex justify-end gap-1">
             <button
@@ -44,7 +48,7 @@ const PasajeroDetalle = () => {
             </Link>
           </div>
         </div>
-        
+
         <div className="divider" />
         <div className="grid grid-cols-2 gap-4">
           <div><span className="font-bold">Numero AD:</span> {pasajero.numero_ad}</div>
@@ -58,7 +62,9 @@ const PasajeroDetalle = () => {
             + Cargar factura
           </Link>
         </div>
-        {!!pasajero?.id && <FacturasTable id={pasajero.id} />}
+
+        {/* Pasamos las facturas del mock */}
+        <FacturasTable facturas={pasajero.facturas} />
       </div>
     </PageLayout>
   );
