@@ -59,10 +59,10 @@ export default function DashboardMetrics({ pasajeros, loading }: DashboardMetric
             {/* 4. Facturas Cargadas (Productivity) - Circle Widget Hybrid */}
             <div className="stats shadow bg-base-100 border border-base-200">
                 <div className="stat">
-                    <div className="stat-figure text-primary-content/50"><DollarSign size={24} /></div>
-                    <div className="stat-title text-primary-content/70 text-xs uppercase font-bold tracking-wider">Facturación Estimada</div>
-                    <div className="stat-value text-3xl">$845k</div>
-                    <div className="stat-desc text-primary-content/80 font-bold">↗︎ 12% vs mes anterior</div>
+                    <div className="stat-figure text-primary"><DollarSign size={24} /></div>
+                    <div className="stat-title text-xs uppercase font-bold opacity-60">Facturación Estimada</div>
+                    <div className="stat-value text-primary">$845k</div>
+                    <div className="stat-desc">↗︎ 12% vs mes anterior</div>
                 </div>
             </div>
         </div>
