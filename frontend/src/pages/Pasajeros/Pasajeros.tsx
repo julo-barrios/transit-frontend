@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { MOCK_PASAJEROS_DETALLADO, MOCK_OBRAS_SOCIALES } from "../../mocks/Data";
-import type { PasajeroListItem } from "../../types";
-import PageLayout from "../../components/PageLayout";
-import TableToolbar from "../../components/TableToolbar";
-import ObraSocialFilter from "../../components/ObraSocialFilter";
+import { MOCK_PASAJEROS_DETALLADO } from "@/mocks/Data";
+import type { PasajeroListItem } from "@/types";
+import PageLayout from "@/components/PageLayout";
+import TableToolbar from "@/components/TableToolbar";
+import ObraSocialFilter from "@/components/ObraSocialFilter";
 import { Link } from "react-router-dom";
 import {
   Building2,

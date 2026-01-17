@@ -1,5 +1,5 @@
 import { useState } from "react";
-import PageLayout from "../../components/PageLayout";
+import PageLayout from "@/components/PageLayout";
 import {
   Filter,
   Download,
@@ -11,9 +11,9 @@ import {
   Building2
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import TableToolbar from "../../components/TableToolbar";
-import ObraSocialFilter from "../../components/ObraSocialFilter";
-import { MOCK_FACTURAS, MOCK_PASAJEROS, MOCK_OBRAS_SOCIALES } from "../../mocks/Data";
+import TableToolbar from "@/components/TableToolbar";
+import ObraSocialFilter from "@/components/ObraSocialFilter";
+import { MOCK_FACTURAS, MOCK_PASAJEROS } from "@/mocks/Data";
 
 const Facturas = () => {
   const [searchTerm, setSearchTerm] = useState("");
