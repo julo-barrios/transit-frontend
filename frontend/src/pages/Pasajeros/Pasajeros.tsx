@@ -54,9 +54,9 @@ const PasajerosTable = () => {
       title="Gestión de Pasajeros"
       breadcrumbs={["Inicio", "Pasajeros"]}
       action={
-        <button className="btn btn-primary btn-sm gap-2 shadow-lg shadow-primary/20">
+        <Link to="/pasajeros/crear" className="btn btn-primary btn-sm gap-2 shadow-lg shadow-primary/20">
           <UserPlus size={16} /> Nuevo Pasajero
-        </button>
+        </Link>
       }
     >
       <div className="space-y-6">
