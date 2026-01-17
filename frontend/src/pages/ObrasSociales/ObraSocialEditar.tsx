@@ -3,7 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import PageLayout from "../../components/PageLayout";
 import { MOCK_OBRAS_SOCIALES } from "../../mocks/Data";
 import { ArrowLeft, Save, Building2 } from "lucide-react";
-import type { ObraSocial } from "../../types";
+import type { ObraSocial, CampoConfiguracion } from "@/types";
+import SchemaBuilder from "@/components/SchemaBuilder";
 
 const ObraSocialEditar = () => {
     const { id } = useParams();
@@ -67,6 +68,13 @@ const ObraSocialEditar = () => {
                                     required
                                 />
                             </div>
+
+                            {/* Constructor de Esquema */}
+                            <div className="divider"></div>
+                            <SchemaBuilder
+                                fields={obraSocial.configuracion_pasajeros || []}
+                                onChange={(newFields) => setObraSocial({ ...obraSocial, configuracion_pasajeros: newFields })}
+                            />
 
                             <div className="card-actions justify-end pt-4">
                                 <button

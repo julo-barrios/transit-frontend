@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { MOCK_PASAJEROS } from "../../mocks/Data";
 import { MOCK_OBRAS_SOCIALES } from "../../mocks/Data";
 import type { Pasajero } from "../../types";
-import PageLayout from "../../components/PageLayout";
+import PageLayout from "@/components/PageLayout";
+import DynamicFieldsRenderer from "@/components/DynamicFieldsRenderer";
 import { ArrowLeft, Save, User } from "lucide-react";
 
 export default function PasajeroEditar() {
@@ -30,10 +31,27 @@ export default function PasajeroEditar() {
     if (pasajero) {
       const nuevaOS = MOCK_OBRAS_SOCIALES.find(os => os.nombre === e.target.value);
       if (nuevaOS) {
-        setPasajero({ ...pasajero, obra_social: nuevaOS })
+        // Al cambiar de OS, podríamos querer limpiar los datos adicionales anteriores
+        setPasajero({
+          ...pasajero,
+          obra_social: nuevaOS,
+          datos_adicionales: {} // Resetear datos al cambiar
+        })
       }
     }
   }
+
+  const handleDynamicChange = (key: string, value: any) => {
+    if (pasajero) {
+      setPasajero({
+        ...pasajero,
+        datos_adicionales: {
+          ...pasajero.datos_adicionales,
+          [key]: value
+        }
+      });
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,6 +156,15 @@ export default function PasajeroEditar() {
                   </select>
                 </label>
               </div>
+
+              {/* Campos Dinámicos */}
+              {pasajero.obra_social?.configuracion_pasajeros && (
+                <DynamicFieldsRenderer
+                  schema={pasajero.obra_social.configuracion_pasajeros}
+                  values={pasajero.datos_adicionales || {}}
+                  onChange={handleDynamicChange}
+                />
+              )}
 
               <div className="card-actions justify-end mt-8 pt-4 border-t border-base-200">
                 <button

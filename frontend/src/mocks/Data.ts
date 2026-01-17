@@ -2,8 +2,23 @@ import type { Pasajero, ObraSocial, Factura, PasajeroListItem } from "../types";
 
 // 1. Mocks de Obras Sociales
 export const MOCK_OBRAS_SOCIALES: ObraSocial[] = [
-  { id: 1, nombre: "OSECAC" },
-  { id: 2, nombre: "OSDE" },
+  {
+    id: 1,
+    nombre: "OSECAC",
+    configuracion_pasajeros: [
+      { key: "nro_carnet", label: "N° Carnet / Credencial", type: "text", required: true },
+      { key: "fecha_vencimiento", label: "Vencimiento Credencial", type: "date", required: true }
+    ],
+    datos_adicionales: { "codigo_interno": "OS-001" }
+  },
+  {
+    id: 2,
+    nombre: "OSDE",
+    configuracion_pasajeros: [
+      { key: "plan", label: "Plan", type: "select", options: ["210", "310", "410", "510"], required: true },
+      { key: "nro_socio", label: "N° Socio (Sin guiones)", type: "number", required: true }
+    ]
+  },
   { id: 3, nombre: "PAMI" },
   { id: 4, nombre: "Swiss Medical" },
   { id: 5, nombre: "IOMA" }
@@ -111,8 +126,8 @@ export const MOCK_FACTURAS: FacturaExtended[] = [
 // 4. Mock Agregado (Pasajeros con sus Facturas)
 export const MOCK_PASAJEROS_DETALLADO = MOCK_PASAJEROS.map(pasajero => {
   const facturasDelPasajero = MOCK_FACTURAS.filter(f => f.nro_ad === pasajero.numero_ad.toString());
-  const ultimoPeriodo = facturasDelPasajero.length > 0 
-    ? facturasDelPasajero[facturasDelPasajero.length - 1].periodo_desde 
+  const ultimoPeriodo = facturasDelPasajero.length > 0
+    ? facturasDelPasajero[facturasDelPasajero.length - 1].periodo_desde
     : null;
 
   return {

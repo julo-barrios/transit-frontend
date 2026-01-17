@@ -15,6 +15,7 @@ import ObrasSociales from './pages/ObrasSociales/ObrasSociales';
 import ObraSocialCrear from './pages/ObrasSociales/ObraSocialCrear';
 import ObraSocialEditar from './pages/ObrasSociales/ObraSocialEditar';
 import FacturaDetalle from './pages/Facturas/FacturaDetalle';
+import Configuracion from './pages/Configuracion/Configuracion';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -33,6 +34,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="obras-sociales" element={<ObrasSociales />} />
           <Route path="obras-sociales/nueva" element={<ObraSocialCrear />} />
           <Route path="obras-sociales/:id/editar" element={<ObraSocialEditar />} />
+          <Route path="configuracion" element={<Configuracion />} />
         </Route>
       </Routes>
     </BrowserRouter>

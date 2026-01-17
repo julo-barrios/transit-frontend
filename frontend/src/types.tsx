@@ -15,9 +15,22 @@ export interface NullableDate {
   Valid: boolean;
 }
 
+// Configuración de un campo dinámico (Schema)
+export interface CampoConfiguracion {
+  key: string;
+  label: string;
+  type: "text" | "number" | "date" | "select";
+  required?: boolean;
+  options?: string[]; // Para tipo 'select'
+}
+
 export interface ObraSocial {
   id: number;
   nombre: string;
+  // Schema: Qué datos pide esta OS a sus pasajeros
+  configuracion_pasajeros?: CampoConfiguracion[];
+  // Data: Datos extra de la propia OS
+  datos_adicionales?: Record<string, any>;
 }
 
 export interface Pasajero {
@@ -29,6 +42,8 @@ export interface Pasajero {
   obra_social?: ObraSocial;
   fecha_nacimiento: string;
   created_at: NullableDate;
+  // Data: Valores de los campos dinámicos
+  datos_adicionales?: Record<string, any>;
 }
 
 export interface Factura {
