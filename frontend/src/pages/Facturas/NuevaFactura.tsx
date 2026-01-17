@@ -1,25 +1,30 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PageLayout from "../../components/PageLayout";
-import { 
-  Calculator, 
-  UploadCloud, 
-  FileCheck, 
-  Calendar, 
-  Zap, 
+import {
+  Calculator,
+  UploadCloud,
+  FileCheck,
+  Calendar,
+  Zap,
   ArrowLeft,
   Info
 } from "lucide-react";
 import type { Pasajero } from "../../types";
+import { MOCK_PASAJEROS } from "../../mocks/Data";
 
 // Esto idealmente vendría de una configuración en la DB
-const PRECIO_KM_DEFAULT = 450; 
+const PRECIO_KM_DEFAULT = 450;
 
 const NuevaFactura = () => {
   const { pasajeroId } = useParams<{ pasajeroId: string }>();
+  // En MOCK_PASAJEROS el id es number, pero useParams trae string. 
+  // Sin embargo, en el router usamos :pasajeroId, pero en Pasajeros.tsx usamos :cuil para navegar.
+  // Revisemos el componente anterior. PasajeroDetalle usa :id para el link: `/pasajeros/${pasajero.id}/facturas/nueva`
+
   const navigate = useNavigate();
   const [pasajero, setPasajero] = useState<Pasajero | null>(null);
-  
+
   const [form, setForm] = useState({
     kilometros: "",
     periodo: "",
@@ -28,12 +33,14 @@ const NuevaFactura = () => {
 
   const [loading, setLoading] = useState(false);
 
-  // Cargamos datos del pasajero para mostrar contexto (nombre, obra social)
+  // Cargamos datos del pasajero desde el mock
   useEffect(() => {
-    fetch(`http://localhost:8080/api/v1/pasajeros/${pasajeroId}`)
-      .then((res) => res.json())
-      .then((data) => setPasajero(data))
-      .catch(err => console.error("Error cargando pasajero:", err));
+    if (pasajeroId) {
+      const found = MOCK_PASAJEROS.find(p => p.id === Number(pasajeroId));
+      if (found) {
+        setPasajero(found);
+      }
+    }
   }, [pasajeroId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -50,35 +57,20 @@ const NuevaFactura = () => {
     e.preventDefault();
     setLoading(true);
 
-    const formData = new FormData();
-    formData.append("pasajero_id", pasajeroId!);
-    formData.append("kilometros", form.kilometros);
-    formData.append("periodo", form.periodo);
-    if (form.archivo) formData.append("archivo", form.archivo);
-    
-    // El backend recibirá esto e iniciará el proceso con ARCA
-    try {
-      const res = await fetch("http://localhost:8080/api/v1/facturas/generate", {
-        method: "POST",
-        body: formData,
-      });
+    // Simular proceso
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
-      if (res.ok) {
-        // Redirigimos al detalle para ver el estado "Procesando"
-        navigate(`/pasajeros/${pasajero?.cuil}`);
-      } else {
-        alert("Error al iniciar la generación de factura");
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+    // Redirigimos al detalle para ver el estado "Procesando"
+    // Usamos el CUIL para navegar porque es la ruta del detalle
+    if (pasajero) {
+      navigate(`/pasajeros/${pasajero.cuil}`);
     }
+    setLoading(false);
   };
 
   return (
-    <PageLayout 
-      title="Generar Factura" 
+    <PageLayout
+      title="Generar Factura"
       breadcrumbs={["Inicio", "Pasajeros", pasajero?.nombre || "Cargando...", "Nueva Factura"]}
       action={
         <button onClick={() => navigate(-1)} className="btn btn-ghost btn-sm gap-2">
@@ -88,22 +80,27 @@ const NuevaFactura = () => {
     >
       <div className="max-w-3xl mx-auto">
         {/* Banner de Información del Pasajero */}
-        <div className="bg-primary/5 border border-primary/10 rounded-2xl p-6 mb-8 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="avatar">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <img src={`https://api.dicebear.com/7.x/personas/svg?seed=${pasajero?.nombre}`} alt="avatar" />
+        {pasajero && (
+          <div className="bg-base-100 shadow-lg border border-base-200 rounded-2xl p-6 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="avatar">
+                <div className="w-16 h-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                  <img src={`https://api.dicebear.com/7.x/personas/svg?seed=${pasajero.nombre}`} alt="avatar" />
+                </div>
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-base-content">{pasajero.nombre} {pasajero.apellido}</h2>
+                <div className="flex flex-col text-sm opacity-70">
+                  <span className="font-mono">CUIL: {pasajero.cuil}</span>
+                  <span className="font-bold uppercase text-primary">Obra Social: {pasajero.obra_social?.nombre || "NO ASIGNADA"}</span>
+                </div>
               </div>
             </div>
-            <div>
-              <h2 className="text-xl font-black text-primary uppercase">{pasajero?.nombre} {pasajero?.apellido}</h2>
-              <p className="text-xs font-bold opacity-60 uppercase tracking-widest">Obra Social: {pasajero?.obra_social?.nombre || "OSECAC"}</p>
+            <div className="text-right">
+              <div className="badge badge-primary p-3 font-bold">ESTRATEGIA: PORTAL WEB</div>
             </div>
           </div>
-          <div className="text-right">
-            <span className="badge badge-primary font-bold">ESTRATEGIA: PORTAL WEB</span>
-          </div>
-        </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -114,10 +111,10 @@ const NuevaFactura = () => {
                   <Calculator size={14} className="text-primary" /> Kilómetros Recorridos
                 </span>
               </label>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 name="kilometros"
-                placeholder="0.00" 
+                placeholder="0.00"
                 className="input input-bordered input-lg w-full focus:border-primary font-mono text-2xl"
                 onChange={handleChange}
                 required
@@ -136,7 +133,7 @@ const NuevaFactura = () => {
                   <Calendar size={14} className="text-primary" /> Periodo Correspondiente
                 </span>
               </label>
-              <select 
+              <select
                 name="periodo"
                 className="select select-bordered select-lg w-full"
                 onChange={handleChange}
@@ -188,15 +185,15 @@ const NuevaFactura = () => {
             <div>
               <p className="font-bold uppercase tracking-wider mb-1">Información del proceso</p>
               <p className="opacity-70 leading-relaxed">
-                Al guardar, se enviará una solicitud de generación a <strong>ARCA</strong>. 
+                Al guardar, se enviará una solicitud de generación a <strong>ARCA</strong>.
                 Una vez autorizada, el sistema enviará automáticamente el correo a la <strong>Obra Social</strong> correspondiente y te notificará por el panel.
               </p>
             </div>
           </div>
 
           {/* Botón de Acción */}
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
             className="btn btn-primary btn-block btn-lg shadow-xl shadow-primary/20 gap-3"
           >
