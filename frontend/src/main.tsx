@@ -11,6 +11,9 @@ import PasajeroEditar from './pages/Pasajeros/PasajeroEditar';
 import PasajeroCrear from './pages/Pasajeros/PasajeroCrear';
 import NuevaFactura from './pages/Facturas/NuevaFactura';
 import FacturaSelectorPasajero from './pages/Facturas/FacturasSelectorPasajero';
+import ObrasSociales from './pages/ObrasSociales/ObrasSociales';
+import ObraSocialCrear from './pages/ObrasSociales/ObraSocialCrear';
+import ObraSocialEditar from './pages/ObrasSociales/ObraSocialEditar';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -25,6 +28,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/pasajeros/:pasajeroId/facturas/nueva" element={<NuevaFactura />} />
           <Route path="facturas" element={<Facturas />} />
           <Route path="facturas/nueva" element={<FacturaSelectorPasajero />} />
+          <Route path="obras-sociales" element={<ObrasSociales />} />
+          <Route path="obras-sociales/nueva" element={<ObraSocialCrear />} />
+          <Route path="obras-sociales/:id/editar" element={<ObraSocialEditar />} />
         </Route>
       </Routes>
     </BrowserRouter>
