@@ -1,5 +1,6 @@
+
 import { Link } from "react-router-dom";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, ChevronRight, Clock, AlertCircle } from "lucide-react";
 import { MOCK_PASAJEROS, MOCK_FACTURAS } from "../../mocks/Data";
 import { calcularDiasTranscurridos } from "../../utils/helpers";
 
@@ -35,7 +36,7 @@ export default function AccreditationPending() {
                                             </p>
                                         </div>
                                         <div className="text-right ml-2">
-                                            <div className={`text-sm font-black ${dias > 45 ? 'text-error' : 'text-primary'}`}>
+                                            <div className={`text - sm font - black ${dias > 45 ? 'text-error' : 'text-primary'} `}>
                                                 {dias} d.
                                             </div>
                                             <p className="text-[8px] uppercase opacity-40 font-bold">Desde envío</p>
@@ -44,14 +45,14 @@ export default function AccreditationPending() {
 
                                     <div className="mt-3 flex gap-2">
                                         <Link
-                                            to="/facturas"
+                                            to={`/facturas/${f.id}`}
                                             className="btn btn-ghost btn-xs flex-1 text-[10px] font-bold"
                                         >
                                             Ver Factura
                                         </Link>
-                                        <button className="btn btn-success btn-xs flex-1 text-white text-[10px] font-bold">
+                                        <Link to={`/facturas`} className="btn btn-success btn-xs flex-1 text-white text-[10px] font-bold">
                                             Acreditar
-                                        </button>
+                                        </Link>
                                     </div>
                                 </div>
                             );

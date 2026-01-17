@@ -1,5 +1,6 @@
 // PasajeroDetalle.tsx (parte de la sección de facturas)
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import type { Factura } from "../../types";
 
 const FacturasTable = ({ facturas }: { facturas: Factura[] }) => {
@@ -37,14 +38,12 @@ const FacturasTable = ({ facturas }: { facturas: Factura[] }) => {
                 <td>${Number(f.importe_total).toFixed(2)}</td>
                 <td>{f.cai}</td>
                 <td>
-                  <a
+                  <Link
                     className="btn btn-ghost btn-xs"
-                    href={f.pdf_path}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    to={`/facturas/${f.id}`}
                   >
-                    Ver PDF
-                  </a>
+                    Ver Detalle
+                  </Link>
                 </td>
               </tr>
             ))}
