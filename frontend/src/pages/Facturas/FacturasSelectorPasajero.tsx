@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import PageLayout from "../../components/PageLayout";
+import PageLayout from "../../components/Layout/PageLayout";
 import { getObrasSociales } from "../../services/pasajeros";
 //import type { ObraSocial, PasajeroListItem } from "../../types";
 import { Building2, User, ArrowRight, Search } from "lucide-react";

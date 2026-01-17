@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import PageLayout from "../../components/PageLayout";
+import PageLayout from "../../components/Layout/PageLayout";
 import {
   Calculator,
   UploadCloud,

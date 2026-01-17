@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { MOCK_PASAJEROS_DETALLADO } from "@/mocks/Data";
 import type { PasajeroListItem } from "@/types";
-import PageLayout from "@/components/PageLayout";
+import PageLayout from "@/components/Layout/PageLayout";
 import TableToolbar from "@/components/TableToolbar";
 import ObraSocialFilter from "@/components/ObraSocialFilter";
 import { Link } from "react-router-dom";

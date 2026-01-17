@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import PageLayout from "../../components/PageLayout";
+import PageLayout from "../../components/Layout/PageLayout";
 import { MOCK_OBRAS_SOCIALES } from "../../mocks/Data";
 import { Plus, Pencil, Trash2, Building2 } from "lucide-react";
 import type { ObraSocial } from "../../types";

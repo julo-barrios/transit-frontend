@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import PageLayout from "../../components/PageLayout";
+import PageLayout from "../../components/Layout/PageLayout";
 import { ArrowLeft, Save, Building2 } from "lucide-react";
 
 const ObraSocialCrear = () => {

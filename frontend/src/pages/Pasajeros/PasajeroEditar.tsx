@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { MOCK_PASAJEROS } from "../../mocks/Data";
 import { MOCK_OBRAS_SOCIALES } from "../../mocks/Data";
 import type { Pasajero } from "../../types";
-import PageLayout from "@/components/PageLayout";
+import PageLayout from "@/components/Layout/PageLayout";
 import DynamicFieldsRenderer from "@/components/DynamicFieldsRenderer";
 import { ArrowLeft, Save, User } from "lucide-react";
 

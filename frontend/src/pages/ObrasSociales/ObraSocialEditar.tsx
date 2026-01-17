@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import PageLayout from "../../components/PageLayout";
+import PageLayout from "../../components/Layout/PageLayout";
 import { MOCK_OBRAS_SOCIALES } from "../../mocks/Data";
 import { ArrowLeft, Save, Building2 } from "lucide-react";
 import type { ObraSocial, CampoConfiguracion } from "@/types";

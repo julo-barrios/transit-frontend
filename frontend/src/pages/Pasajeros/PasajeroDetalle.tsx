@@ -1,6 +1,6 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import PageLayout from "../../components/PageLayout";
+import PageLayout from "../../components/Layout/PageLayout";
 import { MOCK_PASAJEROS_DETALLADO } from "../../mocks/Data";
 import { type PasajeroDetail } from "../../types";
 import FacturasTable from "./PasajeroFacturasTable";

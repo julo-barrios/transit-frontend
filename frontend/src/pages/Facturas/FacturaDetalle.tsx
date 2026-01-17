@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import PageLayout from "../../components/PageLayout";
+import PageLayout from "../../components/Layout/PageLayout";
 import { MOCK_FACTURAS, MOCK_PASAJEROS } from "../../mocks/Data";
 import {
     ArrowLeft,

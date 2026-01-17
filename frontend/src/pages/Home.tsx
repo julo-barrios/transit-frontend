@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
-import PageLayout from "../components/PageLayout";
+import PageLayout from "../components/Layout/PageLayout";
 import DashboardMetrics from "../components/dashboard/DashboardMetrics";
 import FinancialChart from "../components/dashboard/FinancialChart";
 import WorkloadStatus from "../components/dashboard/WorkloadStatus";
