@@ -1,12 +1,16 @@
 
 import { Link } from "react-router-dom";
-import { CheckCircle2, ChevronRight, Clock, AlertCircle } from "lucide-react";
-import { MOCK_PASAJEROS, MOCK_FACTURAS } from "../../mocks/Data";
-import { calcularDiasTranscurridos } from "../../utils/helpers";
+import { AlertCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { dashboardService } from "../../services/dashboard";
+import PendingAccreditationItem from "./PendingAccreditationItem";
 
 export default function AccreditationPending() {
-    const facturasPendientesCobro = MOCK_FACTURAS.filter(f => f.estado === "Enviada" && !f.acreditada)
-        .sort((a, b) => new Date(a.fecha_factura).getTime() - new Date(b.fecha_factura).getTime());
+    const [facturasPendientesCobro, setFacturasPendientesCobro] = useState<any[]>([]);
+
+    useEffect(() => {
+        dashboardService.getAccreditationPending().then(setFacturasPendientesCobro);
+    }, []);
 
     return (
         <div className="card bg-base-100 border border-base-200 shadow-sm overflow-hidden">
@@ -20,43 +24,9 @@ export default function AccreditationPending() {
             <div className="card-body p-5">
                 <div className="space-y-3">
                     {facturasPendientesCobro.length > 0 ? (
-                        facturasPendientesCobro.map((f) => {
-                            const pasajero = MOCK_PASAJEROS.find(p => p.numero_ad.toString() === f.nro_ad);
-                            const dias = calcularDiasTranscurridos(f.fecha_factura);
-
-                            return (
-                                <div key={f.id} className="p-3 rounded-xl border border-base-200 hover:border-primary/30 transition-all bg-base-50/50 group">
-                                    <div className="flex justify-between items-start">
-                                        <div className="min-w-0 flex-1">
-                                            <p className="text-sm font-bold leading-tight truncate">
-                                                {pasajero?.nombre} {pasajero?.apellido}
-                                            </p>
-                                            <p className="text-[10px] opacity-50 font-bold uppercase truncate">
-                                                {f.letra} {f.sucursal}-{f.numero} • {pasajero?.obra_social?.nombre}
-                                            </p>
-                                        </div>
-                                        <div className="text-right ml-2">
-                                            <div className={`text - sm font - black ${dias > 45 ? 'text-error' : 'text-primary'} `}>
-                                                {dias} d.
-                                            </div>
-                                            <p className="text-[8px] uppercase opacity-40 font-bold">Desde envío</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-3 flex gap-2">
-                                        <Link
-                                            to={`/facturas/${f.id}`}
-                                            className="btn btn-ghost btn-xs flex-1 text-[10px] font-bold"
-                                        >
-                                            Ver Factura
-                                        </Link>
-                                        <Link to={`/facturas`} className="btn btn-success btn-xs flex-1 text-white text-[10px] font-bold">
-                                            Acreditar
-                                        </Link>
-                                    </div>
-                                </div>
-                            );
-                        })
+                        facturasPendientesCobro.map((f) => (
+                            <PendingAccreditationItem key={f.id} item={f} />
+                        ))
                     ) : (
                         <div className="text-center py-6 opacity-40">
                             <p className="text-xs font-bold italic">No hay cobros pendientes</p>

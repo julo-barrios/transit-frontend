@@ -60,5 +60,27 @@ export const dashboardService = {
             { id: 102, nombre: "Marta Rodriguez", os: "OSDE", periodo: "Dic 2023" },
             { id: 103, nombre: "Ricardo Darín", os: "PAMI", periodo: "Nov 2023" },
         ];
+    },
+
+    getAccreditationPending: async () => {
+        await delay(300);
+        const facturasPendientes = MOCK_FACTURAS.filter(f => f.estado === "Enviada" && !f.acreditada)
+            .sort((a, b) => new Date(a.fecha_factura).getTime() - new Date(b.fecha_factura).getTime());
+
+        return facturasPendientes.map(f => {
+            const pasajero = MOCK_PASAJEROS.find(p => p.numero_ad.toString() === f.nro_ad);
+            return {
+                id: f.id,
+                letra: f.letra,
+                sucursal: f.sucursal,
+                numero: f.numero,
+                fecha_factura: f.fecha_factura,
+                pasajero: {
+                    nombre: pasajero?.nombre || "Desconocido",
+                    apellido: pasajero?.apellido || "",
+                    obra_social: pasajero?.obra_social?.nombre || "S/D"
+                }
+            };
+        });
     }
 };
