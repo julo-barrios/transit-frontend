@@ -23,6 +23,7 @@ const FacturaDetalle = () => {
     const navigate = useNavigate();
     const [factura, setFactura] = useState<FacturaExtended | null>(null);
     const [pasajero, setPasajero] = useState<Pasajero | null>(null);
+    const [showConfirmation, setShowConfirmation] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -55,8 +56,6 @@ const FacturaDetalle = () => {
             default: return <span className="badge badge-ghost badge-lg gap-2">{estado}</span>;
         }
     };
-
-    const [showConfirmation, setShowConfirmation] = useState(false);
 
     const handleAccredit = () => {
         setShowConfirmation(true);

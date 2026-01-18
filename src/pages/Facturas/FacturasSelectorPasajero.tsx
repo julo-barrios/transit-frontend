@@ -4,7 +4,7 @@ import PageLayout from "../../components/Layout/PageLayout";
 import { obrasSocialesService } from "../../services/obrasSociales";
 import { pasajerosService } from "../../services/pasajeros";
 import type { ObraSocial, Pasajero } from "../../types";
-import { Building2, User, ArrowRight, Search } from "lucide-react";
+import { Building2, ArrowRight, Search } from "lucide-react";
 // ... en el componente:
 
 export default function FacturaSelectorPasajero() {

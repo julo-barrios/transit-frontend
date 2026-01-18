@@ -2,11 +2,17 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Building2, CalendarDays } from "lucide-react";
 import { dashboardService } from "../../services/dashboard";
+import type { WorkloadItem } from "../../types";
+
+type WorkloadUIItem = WorkloadItem & {
+    faltante: number;
+    color: string;
+};
 
 export default function WorkloadStatus() {
     const navigate = useNavigate();
     const [periodoEstadoCarga, setPeriodoEstadoCarga] = useState("2023-12");
-    const [statsObrasSociales, setStatsObrasSociales] = useState<any[]>([]); // Using any for fast iteration on mocks
+    const [statsObrasSociales, setStatsObrasSociales] = useState<WorkloadUIItem[]>([]);
     const [loading, setLoading] = useState(true);
 
     const opcionesPeriodos = [
@@ -21,7 +27,7 @@ export default function WorkloadStatus() {
                 // In a real app we would pass the period to the service
                 const data = await dashboardService.getWorkloadStatus();
                 // Map the simple service data to the UI needs (calculating colors etc)
-                const processed = data.map((item: any) => {
+                const processed = data.map((item) => {
                     const faltantes = item.total - item.completado;
                     return {
                         ...item,

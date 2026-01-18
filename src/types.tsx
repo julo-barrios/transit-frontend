@@ -30,7 +30,7 @@ export interface ObraSocial {
   // Schema: Qué datos pide esta OS a sus pasajeros
   configuracion_pasajeros?: CampoConfiguracion[];
   // Data: Datos extra de la propia OS
-  datos_adicionales?: Record<string, any>;
+  datos_adicionales?: Record<string, unknown>;
 }
 
 export interface Pasajero {
@@ -43,7 +43,7 @@ export interface Pasajero {
   fecha_nacimiento: string;
   created_at: NullableDate;
   // Data: Valores de los campos dinámicos
-  datos_adicionales?: Record<string, any>;
+  datos_adicionales?: Record<string, unknown>;
 }
 
 export interface Factura {
@@ -59,8 +59,31 @@ export interface Factura {
   nro_ad: string;
   pdf_path: string;
   created_at: string;
+  acreditada?: boolean;
+  fecha_acreditacion?: string;
+  estado: "Enviada" | "Procesando ARCA" | "Error" | "Pagada" | "Pendiente";
 }
 
 export interface PasajeroDetail extends Pasajero {
   facturas: Factura[];
+}
+
+export interface AccreditationPendingItem {
+  id: number;
+  letra: string;
+  sucursal: string;
+  numero: string;
+  fecha_factura: string;
+  pasajero: {
+    nombre: string;
+    apellido: string;
+    obra_social: string;
+  };
+}
+
+export interface WorkloadItem {
+  id: number;
+  nombre: string;
+  completado: number;
+  total: number;
 }

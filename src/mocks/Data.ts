@@ -1,4 +1,4 @@
-import type { Pasajero, ObraSocial, Factura, PasajeroListItem } from "../types";
+import type { Pasajero, ObraSocial, Factura } from "../types";
 
 // 1. Mocks de Obras Sociales
 export const MOCK_OBRAS_SOCIALES: ObraSocial[] = [

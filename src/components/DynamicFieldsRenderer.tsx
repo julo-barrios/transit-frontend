@@ -2,8 +2,8 @@ import type { CampoConfiguracion } from "@/types";
 
 interface DynamicFieldsRendererProps {
     schema?: CampoConfiguracion[];
-    values: Record<string, any>;
-    onChange: (key: string, value: any) => void;
+    values: Record<string, string | number>;
+    onChange: (key: string, value: string | number) => void;
 }
 
 const DynamicFieldsRenderer = ({ schema, values, onChange }: DynamicFieldsRendererProps) => {

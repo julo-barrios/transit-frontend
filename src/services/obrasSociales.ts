@@ -1,5 +1,6 @@
 
 import { MOCK_OBRAS_SOCIALES } from "../mocks/Data";
+import type { ObraSocial } from "../types";
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -16,7 +17,7 @@ export const obrasSocialesService = {
         return os;
     },
 
-    create: async (data: any) => {
+    create: async (data: Omit<ObraSocial, "id">) => {
         await delay(600);
         console.log("Mock create OS:", data);
         return { id: 999, ...data };

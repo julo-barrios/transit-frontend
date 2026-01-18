@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import PageLayout from "../../components/Layout/PageLayout";
 import { MOCK_OBRAS_SOCIALES } from "../../mocks/Data";
 import { ArrowLeft, Save, Building2 } from "lucide-react";
-import type { ObraSocial, CampoConfiguracion } from "@/types";
+import type { ObraSocial } from "@/types";
 import SchemaBuilder from "@/components/SchemaBuilder";
 
 const ObraSocialEditar = () => {

@@ -17,13 +17,13 @@ export const pasajerosService = {
     return pasajero;
   },
 
-  create: async (data: any) => {
+  create: async (data: Partial<Pasajero> & { obra_social_id?: number }) => {
     await delay(800);
     console.log("Mock creating pasajero:", data);
     return { ...data, id: Math.floor(Math.random() * 1000) };
   },
 
-  update: async (id: number, data: any) => {
+  update: async (id: number, data: Partial<Pasajero>) => {
     await delay(500);
     console.log(`Mock updating pasajero ${id}:`, data);
     return { id, ...data };

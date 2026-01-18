@@ -6,8 +6,8 @@ interface PendingAccreditationItemProps {
     item: {
         id: number;
         letra: string;
-        sucursal: number;
-        numero: number;
+        sucursal: string;
+        numero: string;
         fecha_factura: string;
         pasajero: {
             nombre: string;

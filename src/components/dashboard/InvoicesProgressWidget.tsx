@@ -1,4 +1,4 @@
-import { FileCheck, AlertCircle } from "lucide-react";
+import { FileCheck } from "lucide-react";
 
 interface InvoicesProgressWidgetProps {
     current: number;
@@ -46,7 +46,6 @@ export default function InvoicesProgressWidget({ current, total }: InvoicesProgr
 
                 {/* Right Content: Circular Progress */}
                 <div className="flex flex-col items-center justify-center">
-                    {/* @ts-ignore - DaisyUI standard custom property */}
                     <div className={`radial-progress ${getColor(percentage)} bg-base-200/30 font-black text-xl`} style={{ "--value": percentage, "--size": "5rem", "--thickness": "6px" } as React.CSSProperties}>
                         {percentage}%
                     </div>

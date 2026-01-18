@@ -6,9 +6,10 @@ import { dashboardService } from "../../services/dashboard";
 import { facturasService } from "../../services/facturas";
 import PendingAccreditationItem from "./PendingAccreditationItem";
 import ConfirmationModal from "../../components/ConfirmationModal";
+import type { AccreditationPendingItem } from "../../types";
 
 export default function AccreditationPending() {
-    const [facturasPendientesCobro, setFacturasPendientesCobro] = useState<any[]>([]);
+    const [facturasPendientesCobro, setFacturasPendientesCobro] = useState<AccreditationPendingItem[]>([]);
     const [confirmationModal, setConfirmationModal] = useState<{ isOpen: boolean; invoiceId: number | null }>({
         isOpen: false,
         invoiceId: null

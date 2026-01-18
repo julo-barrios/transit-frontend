@@ -58,7 +58,9 @@ const NuevaFactura = () => {
   }, [searchParams]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, files } = e.target as any;
+    const target = e.target as HTMLInputElement;
+    const { name, value } = target;
+    const files = target.files;
     setForm((prev) => ({
       ...prev,
       [name]: files ? files[0] : value,

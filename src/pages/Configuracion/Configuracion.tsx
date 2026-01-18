@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import PageLayout from "@/components/Layout/PageLayout";
-import { Save, Building2, Receipt, Palette, Monitor, Moon, Sun } from "lucide-react";
+import { Save, Building2, Receipt, Palette, Moon, Sun } from "lucide-react";
 
 // Tipos para la configuración
 interface ConfigEmpresa {

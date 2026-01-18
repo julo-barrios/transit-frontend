@@ -16,7 +16,7 @@ export default function PasajeroCrear() {
     apellido: "",
     cuil: "",
     obra_social: null as ObraSocial | null,
-    datos_adicionales: {} as Record<string, any>
+    datos_adicionales: {} as Record<string, unknown>
   });
 
   const [loading, setLoading] = useState(false);
@@ -38,7 +38,7 @@ export default function PasajeroCrear() {
     });
   };
 
-  const handleDynamicChange = (key: string, value: any) => {
+  const handleDynamicChange = (key: string, value: string | number) => {
     setFormData({
       ...formData,
       datos_adicionales: {
@@ -170,7 +170,7 @@ export default function PasajeroCrear() {
               {formData.obra_social?.configuracion_pasajeros && (
                 <DynamicFieldsRenderer
                   schema={formData.obra_social.configuracion_pasajeros}
-                  values={formData.datos_adicionales}
+                  values={formData.datos_adicionales as unknown as Record<string, string | number>}
                   onChange={handleDynamicChange}
                 />
               )}

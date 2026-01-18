@@ -21,7 +21,7 @@ describe('WorkloadStatus', () => {
 
     it('renders loading state initially', () => {
         // Mock a promise that doesn't resolve immediately
-        (dashboardService.getWorkloadStatus as any).mockReturnValue(new Promise(() => { }));
+        vi.mocked(dashboardService.getWorkloadStatus).mockReturnValue(new Promise(() => { }));
 
         render(
             <BrowserRouter>
@@ -31,7 +31,7 @@ describe('WorkloadStatus', () => {
 
         // DaisyUI loading spinner has class 'loading-spinner'
         // The component renders: <span className="loading loading-spinner"></span>
-        const spinner = screen.getByText((content, element) => {
+        const spinner = screen.getByText((_, element) => {
             return element?.classList.contains('loading-spinner') ?? false;
         });
         expect(spinner).toBeInTheDocument();
@@ -43,7 +43,7 @@ describe('WorkloadStatus', () => {
             { id: 2, nombre: 'OSDE', completado: 20, total: 20 }
         ];
 
-        (dashboardService.getWorkloadStatus as any).mockResolvedValue(mockData);
+        vi.mocked(dashboardService.getWorkloadStatus).mockResolvedValue(mockData);
 
         render(
             <BrowserRouter>

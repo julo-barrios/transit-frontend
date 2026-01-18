@@ -41,7 +41,7 @@ export default function PasajeroEditar() {
     }
   }
 
-  const handleDynamicChange = (key: string, value: any) => {
+  const handleDynamicChange = (key: string, value: string | number) => {
     if (pasajero) {
       setPasajero({
         ...pasajero,
@@ -161,7 +161,7 @@ export default function PasajeroEditar() {
               {pasajero.obra_social?.configuracion_pasajeros && (
                 <DynamicFieldsRenderer
                   schema={pasajero.obra_social.configuracion_pasajeros}
-                  values={pasajero.datos_adicionales || {}}
+                  values={(pasajero.datos_adicionales || {}) as unknown as Record<string, string | number>}
                   onChange={handleDynamicChange}
                 />
               )}

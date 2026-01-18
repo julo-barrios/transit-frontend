@@ -1,5 +1,6 @@
 
 import { MOCK_FACTURAS, MOCK_PASAJEROS } from "../mocks/Data";
+import type { Factura } from "../types";
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -20,13 +21,13 @@ export const facturasService = {
     return factura;
   },
 
-  create: async (data: any) => {
+  create: async (data: Omit<Factura, "id" | "created_at">) => {
     await delay(1000);
     console.log("Mock create invoice:", data);
     return { id: Math.floor(Math.random() * 10000), ...data };
   },
 
-  update: async (id: number, updates: any) => {
+  update: async (id: number, updates: Partial<Factura>) => {
     await delay(500);
     console.log(`Mock update invoice ${id}:`, updates);
     return { id, ...updates };

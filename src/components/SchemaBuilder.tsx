@@ -99,7 +99,7 @@ const SchemaBuilder = ({ fields, onChange }: SchemaBuilderProps) => {
                             <select
                                 className="select select-sm select-bordered"
                                 value={newField.type}
-                                onChange={e => setNewField(prev => ({ ...prev, type: e.target.value as any }))}
+                                onChange={e => setNewField(prev => ({ ...prev, type: e.target.value as CampoConfiguracion["type"] }))}
                             >
                                 <option value="text">Texto</option>
                                 <option value="number">Número</option>

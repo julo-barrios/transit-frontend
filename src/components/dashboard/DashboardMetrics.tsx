@@ -1,4 +1,4 @@
-import { Users, TrendingUp, Clock, DollarSign, Wallet } from "lucide-react";
+import { Users, DollarSign, Wallet } from "lucide-react";
 // import type { PasajeroListItem } from "../../types";
 
 export interface DashboardMetricsData {
@@ -38,7 +38,7 @@ export default function DashboardMetrics({ metrics, loading }: DashboardMetricsP
                         </div>
 
                         {/* Mini Circle Progress */}
-                        {/* @ts-ignore */}
+
                         <div className="radial-progress text-[10px] font-black" style={{ "--value": porcentajeCargadas, "--size": "3rem", "--thickness": "4px" } as React.CSSProperties}>
                             {porcentajeCargadas}%
                         </div>

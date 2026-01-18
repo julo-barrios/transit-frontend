@@ -1,5 +1,6 @@
 
 import { MOCK_PASAJEROS, MOCK_FACTURAS, MOCK_OBRAS_SOCIALES } from "../mocks/Data";
+import type { AccreditationPendingItem, WorkloadItem } from "../types";
 
 // Simulate network delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -21,13 +22,13 @@ export const dashboardService = {
             estimatedRevenue,
             pendingCollection,
             invoicesStatus: {
-                loaded: 70, // Hardcoded to match UI demo preference or calculate
+                loaded: facturasCargadas,
                 goal: goal
             }
         };
     },
 
-    getWorkloadStatus: async () => {
+    getWorkloadStatus: async (): Promise<WorkloadItem[]> => {
         await delay(300);
         // Use the logic that was in WorkloadStatus.tsx
         const stats = MOCK_OBRAS_SOCIALES.map(os => {
@@ -62,7 +63,7 @@ export const dashboardService = {
         ];
     },
 
-    getAccreditationPending: async () => {
+    getAccreditationPending: async (): Promise<AccreditationPendingItem[]> => {
         await delay(300);
         const facturasPendientes = MOCK_FACTURAS.filter(f => f.estado === "Enviada" && !f.acreditada)
             .sort((a, b) => new Date(a.fecha_factura).getTime() - new Date(b.fecha_factura).getTime());
