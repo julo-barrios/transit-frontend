@@ -16,27 +16,41 @@ import ObraSocialCrear from './pages/ObrasSociales/ObraSocialCrear';
 import ObraSocialEditar from './pages/ObrasSociales/ObraSocialEditar';
 import FacturaDetalle from './pages/Facturas/FacturaDetalle';
 import Configuracion from './pages/Configuracion/Configuracion';
+import { AuthProvider } from './context/AuthContext';
+import Login from './pages/Auth/Login';
+import ProtectedRoute from './components/Layout/ProtectedRoute';
+import OAuthConsent from './pages/Auth/OAuthConsent';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />}>
-          <Route index element={<Home />} />
-          <Route path="pasajeros" element={<Pasajeros />} />
-          <Route path="/pasajeros/:cuil" element={<PasajeroDetalle />} />
-          <Route path="/pasajeros/:cuil/editar" element={<PasajeroEditar />} />
-          <Route path="/pasajeros/crear" element={<PasajeroCrear />} />
-          <Route path="/pasajeros/:pasajeroId/facturas/nueva" element={<NuevaFactura />} />
-          <Route path="facturas" element={<Facturas />} />
-          <Route path="facturas/nueva" element={<FacturaSelectorPasajero />} />
-          <Route path="facturas/:id" element={<FacturaDetalle />} />
-          <Route path="obras-sociales" element={<ObrasSociales />} />
-          <Route path="obras-sociales/nueva" element={<ObraSocialCrear />} />
-          <Route path="obras-sociales/:id/editar" element={<ObraSocialEditar />} />
-          <Route path="configuracion" element={<Configuracion />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/login" element={<Login />} />
+
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/oauth/consent" element={<OAuthConsent />} />
+            <Route path="/" element={<App />}>
+
+              <Route index element={<Home />} />
+              <Route path="pasajeros" element={<Pasajeros />} />
+              <Route path="/pasajeros/:cuil" element={<PasajeroDetalle />} />
+              <Route path="/pasajeros/:cuil/editar" element={<PasajeroEditar />} />
+              <Route path="/pasajeros/crear" element={<PasajeroCrear />} />
+              <Route path="/pasajeros/:pasajeroId/facturas/nueva" element={<NuevaFactura />} />
+              <Route path="facturas" element={<Facturas />} />
+              <Route path="facturas/nueva" element={<FacturaSelectorPasajero />} />
+              <Route path="facturas/:id" element={<FacturaDetalle />} />
+              <Route path="obras-sociales" element={<ObrasSociales />} />
+              <Route path="obras-sociales/nueva" element={<ObraSocialCrear />} />
+              <Route path="obras-sociales/:id/editar" element={<ObraSocialEditar />} />
+              <Route path="configuracion" element={<Configuracion />} />
+            </Route>
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   </React.StrictMode>
 );
