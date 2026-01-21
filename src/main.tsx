@@ -20,6 +20,7 @@ import { AuthProvider } from './context/AuthContext';
 import Login from './pages/Auth/Login';
 import ProtectedRoute from './components/Layout/ProtectedRoute';
 import OAuthConsent from './pages/Auth/OAuthConsent';
+import Profile from './pages/Configuracion/Profile';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -47,6 +48,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               <Route path="obras-sociales/nueva" element={<ObraSocialCrear />} />
               <Route path="obras-sociales/:id/editar" element={<ObraSocialEditar />} />
               <Route path="configuracion" element={<Configuracion />} />
+              <Route path="profile" element={<Profile />} />
             </Route>
           </Route>
         </Routes>

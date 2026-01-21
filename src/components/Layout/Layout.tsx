@@ -30,7 +30,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -126,15 +126,27 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               <Bell size={20} />
             </button>
             <div className="flex items-center gap-3 ml-2 pl-2 border-l border-base-200">
-              <div className="text-right hidden sm:block">
-                <p className="text-xs font-bold leading-none">Julian B.</p>
-                <p className="text-[10px] opacity-50">Administrador</p>
-              </div>
-              <div className="avatar placeholder">
-                <div className="bg-primary text-primary-content rounded-full w-8 shadow-inner font-bold">
-                  <span className="text-xs text-white">JB</span>
+              <Link to="/profile" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <div className="text-right hidden sm:block">
+                  <p className="text-xs font-bold leading-none max-w-[150px] truncate">
+                    {user?.user_metadata?.full_name || user?.email?.split('@')[0] || "Usuario"}
+                  </p>
+                  <p className="text-[10px] opacity-50 uppercase tracking-wide">
+                    {user?.role === 'authenticated' ? 'Usuario' : (user?.role || 'Invitado')}
+                  </p>
                 </div>
-              </div>
+                <div className="avatar placeholder">
+                  <div className="bg-primary text-primary-content rounded-full w-8 shadow-inner font-bold">
+                    {user?.user_metadata?.avatar_url ? (
+                      <img src={user.user_metadata.avatar_url} alt="Avatar" />
+                    ) : (
+                      <span className="text-xs text-white uppercase">
+                        {(user?.email || "U").substring(0, 2)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </Link>
             </div>
           </div>
         </header>
