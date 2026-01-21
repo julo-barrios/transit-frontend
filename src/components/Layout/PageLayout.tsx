@@ -2,9 +2,14 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 
+interface Breadcrumb {
+  label: string;
+  path: string;
+}
+
 interface PageLayoutProps {
   title: string;
-  breadcrumbs: string[];
+  breadcrumbs: Breadcrumb[];
   children: React.ReactNode;
   action?: React.ReactNode;
 }
@@ -19,8 +24,11 @@ const PageLayout: React.FC<PageLayoutProps> = ({ title, breadcrumbs, children, a
             {breadcrumbs.map((crumb, idx) => (
               <React.Fragment key={idx}>
                 {idx > 0 && <ChevronRight size={12} />}
-                <Link to="/" className="hover:text-primary transition-colors italic">
-                  {crumb}
+                <Link
+                  to={crumb.path}
+                  className={`hover:text-primary transition-colors ${idx === breadcrumbs.length - 1 ? 'text-primary' : ''}`}
+                >
+                  {crumb.label}
                 </Link>
               </React.Fragment>
             ))}

@@ -63,7 +63,10 @@ const Configuracion = () => {
     return (
         <PageLayout
             title="Configuración"
-            breadcrumbs={["Inicio", "Configuración"]}
+            breadcrumbs={[
+                { label: "Inicio", path: "/" },
+                { label: "Configuración", path: "/configuracion" }
+            ]}
         >
             <div className="flex flex-col md:flex-row gap-6">
 

@@ -52,7 +52,7 @@ const PasajerosTable = () => {
   return (
     <PageLayout
       title="Gestión de Pasajeros"
-      breadcrumbs={["Inicio", "Pasajeros"]}
+      breadcrumbs={[{ label: "Inicio", path: "/" }, { label: "Pasajeros", path: "/pasajeros" }]}
       action={
         <Link to="/pasajeros/crear" className="btn btn-primary btn-sm gap-2 shadow-lg shadow-primary/20">
           <UserPlus size={16} /> Nuevo Pasajero

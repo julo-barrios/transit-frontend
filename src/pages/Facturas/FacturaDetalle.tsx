@@ -38,7 +38,11 @@ const FacturaDetalle = () => {
 
     if (!factura) {
         return (
-            <PageLayout title="Detalle de Factura" breadcrumbs={["Inicio", "Facturas", "Detalle"]}>
+            <PageLayout title="Detalle de Factura" breadcrumbs={[
+                { label: "Inicio", path: "/" },
+                { label: "Facturas", path: "/facturas" },
+                { label: "Detalle", path: "/facturas" }
+            ]}>
                 <div className="flex flex-col items-center justify-center h-64 opacity-50">
                     <FileText size={48} className="mb-4" />
                     <p>Factura no encontrada</p>
@@ -74,7 +78,11 @@ const FacturaDetalle = () => {
     return (
         <PageLayout
             title={`Factura ${factura.letra} ${factura.sucursal}-${factura.numero}`}
-            breadcrumbs={["Inicio", "Facturas", `${factura.letra}-${factura.numero}`]}
+            breadcrumbs={[
+                { label: "Inicio", path: "/" },
+                { label: "Facturas", path: "/facturas" },
+                { label: `${factura.letra}-${factura.numero}`, path: `/facturas/${factura.id}` }
+            ]}
             action={
                 <button onClick={() => navigate(-1)} className="btn btn-ghost btn-sm gap-2">
                     <ArrowLeft size={16} /> Volver

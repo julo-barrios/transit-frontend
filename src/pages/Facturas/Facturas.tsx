@@ -81,7 +81,10 @@ const Facturas = () => {
   return (
     <PageLayout
       title="Gestión de Facturas"
-      breadcrumbs={["Inicio", "Facturas"]}
+      breadcrumbs={[
+        { label: "Inicio", path: "/" },
+        { label: "Facturas", path: "/facturas" }
+      ]}
       action={
         <Link to="/facturas/nueva" className="btn btn-primary btn-sm gap-2 shadow-lg shadow-primary/20">
           <Plus size={16} /> Nueva Factura

@@ -28,7 +28,7 @@ const ObrasSociales = () => {
     return (
         <PageLayout
             title="Obras Sociales"
-            breadcrumbs={["Inicio", "Obras Sociales"]}
+            breadcrumbs={[{ label: "Inicio", path: "/" }, { label: "Obras Sociales", path: "/obras-sociales" }]}
             action={
                 <Link to="/obras-sociales/nueva" className="btn btn-primary btn-sm gap-2">
                     <Plus size={16} /> Nueva Obra Social

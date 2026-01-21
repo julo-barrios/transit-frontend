@@ -24,7 +24,11 @@ const Profile = () => {
     return (
         <PageLayout
             title="Mi Perfil"
-            breadcrumbs={["Inicio", "Configuración", "Perfil"]}
+            breadcrumbs={[
+                { label: "Inicio", path: "/" },
+                { label: "Configuración", path: "/configuracion" },
+                { label: "Perfil", path: "/profile" }
+            ]}
         >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Main Profile Card */}

@@ -31,7 +31,7 @@ export default function Home() {
   return (
     <PageLayout
       title="Panel de Control"
-      breadcrumbs={["Inicio"]}
+      breadcrumbs={[{ label: "Inicio", path: "/" }]}
       action={
         <Link to="/facturas/nueva" className="btn btn-primary btn-sm gap-2">
           <Plus size={16} /> Nueva Factura

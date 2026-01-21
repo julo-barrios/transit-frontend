@@ -25,7 +25,11 @@ const PasajeroDetalle = () => {
   return (
     <PageLayout
       title="Detalle del Pasajero"
-      breadcrumbs={["Home", "Pasajeros", `${pasajero.nombre} ${pasajero.apellido}`]}
+      breadcrumbs={[
+        { label: "Inicio", path: "/" },
+        { label: "Pasajeros", path: "/pasajeros" },
+        { label: `${pasajero.nombre} ${pasajero.apellido}`, path: `/pasajeros/${pasajero.cuil}` }
+      ]}
       action={
         <button onClick={() => navigate("/pasajeros")} className="btn btn-ghost btn-sm gap-2">
           <ArrowLeft size={16} /> Volver
