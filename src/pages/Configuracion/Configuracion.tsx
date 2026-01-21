@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import PageLayout from "@/components/Layout/PageLayout";
-import { Save, Building2, Receipt, Palette, Moon, Sun } from "lucide-react";
+import { Save, Building2, Receipt, Palette, Moon, Sun, Users } from "lucide-react";
+import TeamMembers from "./TeamMembers";
 
 // Tipos para la configuración
 interface ConfigEmpresa {
@@ -17,7 +18,7 @@ interface ConfigSistema {
 }
 
 const Configuracion = () => {
-    const [activeTab, setActiveTab] = useState<"empresa" | "sistema" | "apariencia">("empresa");
+    const [activeTab, setActiveTab] = useState<"empresa" | "sistema" | "equipo" | "apariencia">("empresa");
     const [loading, setLoading] = useState(false);
 
     // Mock de datos iniciales (idealmente vendrían de localStorage o API)
@@ -75,6 +76,14 @@ const Configuracion = () => {
                                 onClick={() => setActiveTab("empresa")}
                             >
                                 <Building2 size={18} /> Datos de Empresa
+                            </button>
+                        </li>
+                        <li>
+                            <button
+                                className={activeTab === "equipo" ? "active font-bold" : ""}
+                                onClick={() => setActiveTab("equipo")}
+                            >
+                                <Users size={18} /> Mi Equipo
                             </button>
                         </li>
                         <li>
@@ -188,6 +197,11 @@ const Configuracion = () => {
                                         </div>
                                     </div>
                                 </div>
+                            )}
+
+                            {/* Sección Equipo */}
+                            {activeTab === "equipo" && (
+                                <TeamMembers />
                             )}
 
                         </div>
