@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import type { User, Session } from '@supabase/supabase-js';
+import { User, Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
     session: Session | null;
@@ -15,18 +15,27 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Custom interface for our App's metadata
+export interface AppMetadata {
+    role?: string;
+    tenant_id?: string;
+    tenant_name?: string;
+    debug_org_name?: string;
+    [key: string]: unknown;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [session, setSession] = useState<Session | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [tenantId, setTenantId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const updateUserState = (session: Session | null) => {
-        setSession(session);
+    const updateUserState = (newSession: Session | null) => {
+        setSession(newSession);
         setLoading(false);
 
-        if (session?.user) {
-            const metadata = session.user.app_metadata;
+        if (newSession?.user) {
+            const metadata = newSession.user.app_metadata as AppMetadata;
 
             // AUTOMATIC REFRESH FIX:
             // If we have a user but NO tenant_name (and we expect one), 
@@ -50,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
 
             setUser({
-                ...session.user,
+                ...newSession.user,
                 role: metadata.role || 'guest', // Override standard role with our custom claim
             } as User);
 
@@ -69,15 +78,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         // 1. Initial Session Check
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            updateUserState(session);
+        supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+            updateUserState(initialSession);
         });
 
         // 2. Listen for Auth Changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
             if (_event === 'TOKEN_REFRESHED' || _event === 'SIGNED_IN') {
                 console.log("Auth Event:", _event);
-                updateUserState(session);
+                updateUserState(currentSession);
             } else if (_event === 'SIGNED_OUT') {
                 updateUserState(null);
             }

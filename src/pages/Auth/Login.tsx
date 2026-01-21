@@ -26,9 +26,9 @@ export default function Login() {
         setError(null);
         try {
             await signInWithGoogle();
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error(err);
-            setError(err.message || 'Error al iniciar sesión con Google');
+            setError((err as Error).message || 'Error al iniciar sesión con Google');
             setLoading(false);
         }
     };
@@ -39,9 +39,9 @@ export default function Login() {
         setError(null);
         try {
             await signInWithMicrosoft();
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error(err);
-            setError(err.message || 'Error al iniciar sesión con Microsoft');
+            setError((err as Error).message || 'Error al iniciar sesión con Microsoft');
             setLoading(false);
         }
     };
@@ -53,9 +53,9 @@ export default function Login() {
         try {
             await signInWithPassword(email, password);
             // Navigation happens automatically via AuthContext state change
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error(err);
-            setError(err.message || 'Error al iniciar sesión. Verifique sus credenciales.');
+            setError((err as Error).message || 'Error al iniciar sesión. Verifique sus credenciales.');
             setLoading(false);
         }
     };

@@ -16,14 +16,15 @@ export default function TeamMembers() {
     const [inviteLoading, setInviteLoading] = useState(false);
     const [inviteSuccess, setInviteSuccess] = useState<string | null>(null);
 
-    const isAdmin = (user as any)?.role === 'admin';
+    const isAdmin = user?.role === 'admin';
 
     const fetchMembers = async () => {
         setLoading(true);
         try {
             const data = await userService.getOrganizationMembers();
             setMembers(data);
-        } catch (err: any) {
+        } catch (err: unknown) {
+            console.error(err);
             setError("No se pudieron cargar los miembros del equipo.");
         } finally {
             setLoading(false);
@@ -53,8 +54,9 @@ export default function TeamMembers() {
             setIsModalOpen(false);
             // Refresh list (simulate optimist update or fetch)
             fetchMembers();
-        } catch (err: any) {
-            setError(err.message || "Error enviando invitación");
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : "Error enviando invitación";
+            setError(message);
         } finally {
             setInviteLoading(false);
         }

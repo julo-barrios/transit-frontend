@@ -1,6 +1,6 @@
 import PageLayout from "@/components/Layout/PageLayout";
 import { Mail, Shield, Building, Clock } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth, type AppMetadata } from "@/context/AuthContext";
 
 const Profile = () => {
     const { user, tenantId } = useAuth();
@@ -13,7 +13,8 @@ const Profile = () => {
         ? new Date(user.last_sign_in_at).toLocaleString()
         : 'Desconocido';
 
-    const provider = user.app_metadata.provider || 'email';
+    const appMetadata = user.app_metadata as AppMetadata;
+    const provider = appMetadata.provider || 'email';
     const email = user.email;
 
     // Supabase auth metadata often stores name/avatar in user_metadata
@@ -47,10 +48,10 @@ const Profile = () => {
                                     </p>
                                     <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
                                         <div className="badge badge-primary badge-outline gap-1 capitalize">
-                                            {provider}
+                                            {String(provider)}
                                         </div>
                                         <div className="badge badge-ghost gap-1">
-                                            {(user as any).role || 'user'}
+                                            {user.role || 'user'}
                                         </div>
                                     </div>
                                 </div>
@@ -90,7 +91,7 @@ const Profile = () => {
                             <div className="py-2">
                                 <p className="text-xs font-bold opacity-60 uppercase mb-1">Nombre</p>
                                 <div className="flex items-center gap-2 p-2 bg-base-200 rounded font-medium break-all text-lg">
-                                    {(user as any).app_metadata?.tenant_name || tenantId || "No asignado"}
+                                    {appMetadata.tenant_name || tenantId || "No asignado"}
                                 </div>
                                 <p className="text-[10px] mt-2 opacity-60">
                                     Organización activa a la que pertenece tu usuario.
