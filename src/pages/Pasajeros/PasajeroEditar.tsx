@@ -67,7 +67,12 @@ export default function PasajeroEditar() {
   return (
     <PageLayout
       title="Editar Pasajero"
-      breadcrumbs={["Home", "Pasajeros", `${pasajero.nombre} ${pasajero.apellido}`, "Editar"]}
+      breadcrumbs={[
+        { label: "Inicio", path: "/" },
+        { label: "Pasajeros", path: "/pasajeros" },
+        { label: `${pasajero.nombre} ${pasajero.apellido}`, path: `/pasajeros/${cuil}` },
+        { label: "Editar", path: "#" }
+      ]}
       action={
         <button onClick={() => navigate(`/pasajeros/${cuil}`)} className="btn btn-ghost btn-sm gap-2">
           <ArrowLeft size={16} /> Cancelar

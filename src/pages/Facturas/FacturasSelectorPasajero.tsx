@@ -54,7 +54,11 @@ export default function FacturaSelectorPasajero() {
   });
 
   return (
-    <PageLayout title="Nueva Factura: Seleccionar Pasajero" breadcrumbs={["Inicio", "Facturas", "Selección"]}>
+    <PageLayout title="Nueva Factura: Seleccionar Pasajero" breadcrumbs={[
+      { label: "Inicio", path: "/" },
+      { label: "Facturas", path: "/facturas" },
+      { label: "Selección", path: "/facturas/nueva" }
+    ]}>
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Filtros */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-base-200/50 p-6 rounded-2xl border border-base-300">

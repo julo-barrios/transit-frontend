@@ -87,7 +87,12 @@ const NuevaFactura = () => {
   return (
     <PageLayout
       title="Generar Factura"
-      breadcrumbs={["Inicio", "Pasajeros", pasajero?.nombre || "Cargando...", "Nueva Factura"]}
+      breadcrumbs={[
+        { label: "Inicio", path: "/" },
+        { label: "Pasajeros", path: "/pasajeros" },
+        { label: pasajero?.nombre || "Cargando...", path: pasajero ? `/pasajeros/${pasajero.cuil}` : "#" },
+        { label: "Nueva Factura", path: "#" }
+      ]}
       action={
         <button onClick={() => navigate(-1)} className="btn btn-ghost btn-sm gap-2">
           <ArrowLeft size={16} /> Volver

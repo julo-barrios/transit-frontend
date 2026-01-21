@@ -24,7 +24,11 @@ const ObraSocialCrear = () => {
     return (
         <PageLayout
             title="Nueva Obra Social"
-            breadcrumbs={["Inicio", "Obras Sociales", "Crear"]}
+            breadcrumbs={[
+                { label: "Inicio", path: "/" },
+                { label: "Obras Sociales", path: "/obras-sociales" },
+                { label: "Crear", path: "/obras-sociales/nueva" }
+            ]}
             action={
                 <button onClick={() => navigate("/obras-sociales")} className="btn btn-ghost btn-sm gap-2">
                     <ArrowLeft size={16} /> Cancelar
