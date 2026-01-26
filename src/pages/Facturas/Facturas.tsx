@@ -54,7 +54,7 @@ const Facturas = () => {
   // Lógica de filtrado avanzada
   const facturasFiltradas = facturas.filter(f => {
     // Buscamos el pasajero para obtener su nombre y su obra social
-    const pasajero = MOCK_PASAJEROS.find(p => p.identificador_os.toString() === f.nro_ad);
+    const pasajero = MOCK_PASAJEROS.find(p => p.identificador_os.toString() === f.identificador_os);
     const nombreCompleto = `${pasajero?.nombre} ${pasajero?.apellido} `.toLowerCase();
     const nombreOS = pasajero?.obra_social?.nombre || "Sin OS";
 
@@ -125,7 +125,7 @@ const Facturas = () => {
               <tr className="text-xs uppercase opacity-60">
                 <th>N° Factura / Letra</th>
                 <th>Pasajero / Obra Social</th>
-                <th>Periodo / KM</th>
+                <th>Periodo</th>
                 <th>Total</th>
                 <th>Estado</th>
                 <th className="text-right">Acciones</th>
@@ -133,7 +133,7 @@ const Facturas = () => {
             </thead>
             <tbody>
               {facturasFiltradas.map((f) => {
-                const pasajero = MOCK_PASAJEROS.find(p => p.identificador_os.toString() === f.nro_ad);
+                const pasajero = MOCK_PASAJEROS.find(p => p.identificador_os.toString() === f.identificador_os);
                 return (
                   <tr key={f.id} className="hover:bg-base-200/40 transition-colors">
                     <td>
@@ -155,7 +155,6 @@ const Facturas = () => {
                     </td>
                     <td>
                       <div className="text-sm font-medium">{f.periodo_desde}</div>
-                      <div className="text-[10px] opacity-60">{f.kilometros} KM recorridos</div>
                     </td>
                     <td>
                       <div className="font-black text-primary italic">

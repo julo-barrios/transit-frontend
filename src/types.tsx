@@ -71,7 +71,7 @@ export interface Factura {
   letra: string;
   sucursal: string;
   numero: string;
-  nro_ad: string;
+  identificador_os: string;
   pdf_path: string;
   created_at: string;
   acreditada?: boolean;

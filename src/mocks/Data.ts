@@ -82,7 +82,7 @@ export const MOCK_FACTURAS: FacturaExtended[] = [
     letra: "A",
     sucursal: "1",
     numero: "123456",
-    nro_ad: "450",
+    identificador_os: "450",
     pdf_path: "",
     created_at: ""
   },
@@ -100,7 +100,7 @@ export const MOCK_FACTURAS: FacturaExtended[] = [
     letra: "A",
     sucursal: "1",
     numero: "123456",
-    nro_ad: "450",
+    identificador_os: "450",
     pdf_path: "",
     created_at: ""
   },
@@ -117,7 +117,7 @@ export const MOCK_FACTURAS: FacturaExtended[] = [
     letra: "A",
     sucursal: "1",
     numero: "123456",
-    nro_ad: "450",
+    identificador_os: "450",
     pdf_path: "",
     created_at: ""
   }
@@ -125,7 +125,7 @@ export const MOCK_FACTURAS: FacturaExtended[] = [
 
 // 4. Mock Agregado (Pasajeros con sus Facturas)
 export const MOCK_PASAJEROS_DETALLADO = MOCK_PASAJEROS.map(pasajero => {
-  const facturasDelPasajero = MOCK_FACTURAS.filter(f => f.nro_ad === pasajero.identificador_os.toString());
+  const facturasDelPasajero = MOCK_FACTURAS.filter(f => f.identificador_os === pasajero.identificador_os.toString());
   const ultimoPeriodo = facturasDelPasajero.length > 0
     ? facturasDelPasajero[facturasDelPasajero.length - 1].periodo_desde
     : null;
