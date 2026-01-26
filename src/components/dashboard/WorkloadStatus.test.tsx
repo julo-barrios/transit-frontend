@@ -25,7 +25,7 @@ describe('WorkloadStatus', () => {
             isPending: true,
             status: 'pending',
             fetchStatus: 'fetching'
-        } as any);
+        } as unknown as ReturnType<typeof useWorkload>);
 
         render(
             <BrowserRouter>
@@ -54,7 +54,7 @@ describe('WorkloadStatus', () => {
             isPending: false,
             status: 'success',
             fetchStatus: 'idle'
-        } as any);
+        } as unknown as ReturnType<typeof useWorkload>);
 
         render(
             <BrowserRouter>
