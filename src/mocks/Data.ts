@@ -31,7 +31,7 @@ export const MOCK_PASAJEROS: Pasajero[] = [
     nombre: "Julian",
     apellido: "Barrios",
     cuil: "20-38948434-9",
-    numero_ad: 450,
+    identificador_os: "450",
     obra_social: MOCK_OBRAS_SOCIALES[0], // OSECAC
     fecha_nacimiento: "1995-05-15",
     created_at: { Time: new Date("2023-01-10"), Valid: true }
@@ -41,7 +41,7 @@ export const MOCK_PASAJEROS: Pasajero[] = [
     nombre: "Marta",
     apellido: "Rodriguez",
     cuil: "27-15443221-4",
-    numero_ad: 122,
+    identificador_os: "122",
     obra_social: MOCK_OBRAS_SOCIALES[1], // OSDE
     fecha_nacimiento: "1980-08-22",
     created_at: { Time: new Date("2023-02-15"), Valid: true }
@@ -51,7 +51,7 @@ export const MOCK_PASAJEROS: Pasajero[] = [
     nombre: "Ricardo",
     apellido: "Darín",
     cuil: "20-11223344-5",
-    numero_ad: 89,
+    identificador_os: "89",
     obra_social: MOCK_OBRAS_SOCIALES[2], // PAMI
     fecha_nacimiento: "1957-01-16",
     created_at: { Time: new Date("2023-05-20"), Valid: true }
@@ -125,7 +125,7 @@ export const MOCK_FACTURAS: FacturaExtended[] = [
 
 // 4. Mock Agregado (Pasajeros con sus Facturas)
 export const MOCK_PASAJEROS_DETALLADO = MOCK_PASAJEROS.map(pasajero => {
-  const facturasDelPasajero = MOCK_FACTURAS.filter(f => f.nro_ad === pasajero.numero_ad.toString());
+  const facturasDelPasajero = MOCK_FACTURAS.filter(f => f.nro_ad === pasajero.identificador_os.toString());
   const ultimoPeriodo = facturasDelPasajero.length > 0
     ? facturasDelPasajero[facturasDelPasajero.length - 1].periodo_desde
     : null;

@@ -1,29 +1,27 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { pasajerosService } from "../../services/pasajeros";
-import { obrasSocialesService } from "../../services/obrasSociales";
 import PageLayout from "@/components/Layout/PageLayout";
 import DynamicFieldsRenderer from "@/components/DynamicFieldsRenderer";
 import { ArrowLeft, Save, User } from "lucide-react";
 import type { ObraSocial } from "@/types";
+import { useCreatePasajero } from "@/hooks/usePasajeros";
+import { useObrasSociales } from "@/hooks/useObrasSociales";
 
 export default function PasajeroCrear() {
   const navigate = useNavigate();
-  const [obrasSociales, setObrasSociales] = useState<ObraSocial[]>([]);
+
+  // Hooks
+  const { data: obrasSociales = [] } = useObrasSociales();
+  const createMutation = useCreatePasajero();
 
   const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
     cuil: "",
+    identificador_os: "",
     obra_social: null as ObraSocial | null,
     datos_adicionales: {} as Record<string, unknown>
   });
-
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    obrasSocialesService.getAll().then((data) => setObrasSociales(data));
-  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -48,20 +46,26 @@ export default function PasajeroCrear() {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.obra_social) return; // Validation: needs OS
 
-    setLoading(true);
-    await pasajerosService.create({
+    createMutation.mutate({
       nombre: formData.nombre,
       apellido: formData.apellido,
       cuil: formData.cuil, // Added CUIL support
+      identificador_os: formData.identificador_os,
       obra_social_id: formData.obra_social.id,
       datos_adicionales: formData.datos_adicionales
+    }, {
+      onSuccess: () => {
+        navigate("/pasajeros");
+      },
+      onError: (error) => {
+        console.error("Error creating:", error);
+        alert("Error al crear pasajero");
+      }
     });
-    setLoading(false);
-    navigate("/pasajeros");
   };
 
   return (
@@ -151,6 +155,22 @@ export default function PasajeroCrear() {
                   />
                 </label>
 
+                {/* ID Obra Social */}
+                <label className="form-control w-full">
+                  <div className="label">
+                    <span className="label-text font-medium">ID Obra Social</span>
+                  </div>
+                  <input
+                    name="identificador_os"
+                    type="text"
+                    value={formData.identificador_os}
+                    onChange={handleChange}
+                    className="input input-bordered w-full focus:input-primary"
+                    placeholder="Número de afiliado / ID"
+                    required
+                  />
+                </label>
+
                 {/* Obra Social */}
                 <label className="form-control w-full">
                   <div className="label">
@@ -187,8 +207,8 @@ export default function PasajeroCrear() {
                 >
                   Cancelar
                 </button>
-                <button type="submit" className="btn btn-primary gap-2" disabled={loading}>
-                  {loading ? <span className="loading loading-spinner loading-sm"></span> : <Save size={18} />}
+                <button type="submit" className="btn btn-primary gap-2" disabled={createMutation.isPending}>
+                  {createMutation.isPending ? <span className="loading loading-spinner loading-sm"></span> : <Save size={18} />}
                   Crear Pasajero
                 </button>
               </div>

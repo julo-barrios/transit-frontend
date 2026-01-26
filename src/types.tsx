@@ -3,7 +3,7 @@ export interface PasajeroListItem {
   nombre: string;
   apellido: string;
   obra_social: ObraSocial | string;
-  numero_ad: number;
+  identificador_os: string;
   cuil: string;
   fecha_nacimiento: string;
   created_at: NullableDate;
@@ -41,13 +41,24 @@ export interface Pasajero {
   nombre: string;
   apellido: string;
   cuil: string;
-  numero_ad: number;
+  identificador_os: string;
   obra_social?: ObraSocial;
   fecha_nacimiento: string;
   created_at: NullableDate;
   // Data: Valores de los campos dinámicos
   datos_adicionales?: Record<string, unknown>;
 }
+
+export interface CreatePasajeroPayload {
+  nombre: string;
+  apellido: string;
+  cuil: string;
+  identificador_os: string;
+  obra_social_id: number;
+  datos_adicionales?: Record<string, unknown>;
+}
+
+export type UpdatePasajeroPayload = Partial<CreatePasajeroPayload>;
 
 export interface Factura {
   id: number;

@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import PageLayout from "../../components/Layout/PageLayout";
 import { obrasSocialesService } from "../../services/obrasSociales";
 import { pasajerosService } from "../../services/pasajeros";
-import type { ObraSocial, Pasajero } from "../../types";
+import type { ObraSocial, PasajeroListItem } from "../../types";
 import { Building2, ArrowRight, Search } from "lucide-react";
 // ... en el componente:
 
@@ -11,7 +11,7 @@ export default function FacturaSelectorPasajero() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [obrasSociales, setObrasSociales] = useState<ObraSocial[]>([]);
-  const [pasajeros, setPasajeros] = useState<Pasajero[]>([]);
+  const [pasajeros, setPasajeros] = useState<PasajeroListItem[]>([]);
 
   // Initialize from URL or default to empty
   const [selectedOS, setSelectedOS] = useState<string>(searchParams.get("obraSocial") || "");
@@ -117,7 +117,7 @@ export default function FacturaSelectorPasajero() {
                       <p className="font-bold text-lg">{p.nombre} {p.apellido}</p>
                       <div className="flex gap-2 items-center">
                         <span className="badge badge-sm badge-outline opacity-70">{p.cuil}</span>
-                        <span className="badge badge-primary badge-sm font-bold uppercase">{p.obra_social?.nombre || "Sin OS"}</span>
+                        <span className="badge badge-primary badge-sm font-bold uppercase">{typeof p.obra_social === 'string' ? p.obra_social : p.obra_social?.nombre || "Sin OS"}</span>
                       </div>
                     </div>
                   </div>

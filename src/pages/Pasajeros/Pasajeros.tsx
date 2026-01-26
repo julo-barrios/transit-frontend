@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-import { MOCK_PASAJEROS_DETALLADO } from "@/mocks/Data";
-import type { PasajeroListItem } from "@/types";
+import { useState } from "react";
 import PageLayout from "@/components/Layout/PageLayout";
 import TableToolbar from "@/components/TableToolbar";
 import ObraSocialFilter from "@/components/ObraSocialFilter";
@@ -13,20 +11,14 @@ import {
   Trash2
 } from "lucide-react";
 
+import { usePasajeros } from "@/hooks/usePasajeros";
+
 const PasajerosTable = () => {
-  const [pasajeros, setPasajeros] = useState<PasajeroListItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [osFilter, setOsFilter] = useState("Todas");
 
-  useEffect(() => {
-    // Simular carga
-    const timer = setTimeout(() => {
-      setPasajeros(MOCK_PASAJEROS_DETALLADO as unknown as PasajeroListItem[]);
-      setLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
+  // Fetch all and filter client-side to maintain existing behavior for now
+  const { data: pasajeros = [], isLoading: loading } = usePasajeros();
 
   // Lógica de filtrado avanzada
   // Lógica de filtrado avanzada
@@ -79,7 +71,7 @@ const PasajerosTable = () => {
               <tr className="text-xs uppercase opacity-60">
                 <th>Pasajero</th>
                 <th>Obra Social</th>
-                <th>Datos Adicionales</th>
+                <th>Identificador Obra Social</th>
                 <th>Ult. Periodo</th>
                 <th className="text-right">Acciones</th>
               </tr>
@@ -109,10 +101,10 @@ const PasajerosTable = () => {
                     </td>
                     <td>
                       <div className="text-xs">
-                        <span className="opacity-50">N° AD:</span> <span className="font-mono font-bold">{p.numero_ad}</span>
+                        <span className="opacity-50">ID Obra Social:</span> <span className="font-mono font-bold">{p.identificador_os}</span>
                       </div>
                       <div className="text-[10px] opacity-40">
-                        Alta: {new Date(p.created_at.Time).toLocaleDateString()}
+                        Alta: {p.created_at?.Time ? new Date(p.created_at.Time).toLocaleDateString() : 'N/A'}
                       </div>
                     </td>
                     <td>
@@ -124,10 +116,10 @@ const PasajerosTable = () => {
                     </td>
                     <td className="text-right">
                       <div className="flex justify-end gap-1">
-                        <Link to={`/pasajeros/${p.cuil}`} className="btn btn-ghost btn-xs btn-square hover:text-primary" title="Ver Detalles">
+                        <Link to={`/pasajeros/${p.id}`} className="btn btn-ghost btn-xs btn-square hover:text-primary" title="Ver Detalles">
                           <Eye size={16} />
                         </Link>
-                        <Link to={`/pasajeros/${p.cuil}/editar`} className="btn btn-ghost btn-xs btn-square hover:text-warning" title="Editar">
+                        <Link to={`/pasajeros/${p.id}/editar`} className="btn btn-ghost btn-xs btn-square hover:text-warning" title="Editar">
                           <Pencil size={16} />
                         </Link>
                         <button className="btn btn-ghost btn-xs btn-square hover:text-error" title="Eliminar (Simulado)">

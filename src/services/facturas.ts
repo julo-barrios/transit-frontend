@@ -9,7 +9,7 @@ export const facturasService = {
     await delay(500);
     // Enrich with passenger names for display purposes if needed
     return MOCK_FACTURAS.map(f => {
-      const pasajero = MOCK_PASAJEROS.find(p => p.numero_ad.toString() === f.nro_ad);
+      const pasajero = MOCK_PASAJEROS.find(p => p.identificador_os.toString() === f.nro_ad);
       return { ...f, passengerName: pasajero ? `${pasajero.nombre} ${pasajero.apellido}` : "Desconocido" };
     });
   },

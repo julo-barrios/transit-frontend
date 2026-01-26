@@ -1,26 +1,20 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useEffect, useState } from "react";
 import PageLayout from "../../components/Layout/PageLayout";
-import { MOCK_PASAJEROS_DETALLADO } from "../../mocks/Data";
 import { type PasajeroDetail } from "../../types";
 import FacturasTable from "./PasajeroFacturasTable";
 import { User, CreditCard, ArrowLeft, Pencil, Plus } from "lucide-react";
+import { usePasajero } from "../../hooks/usePasajeros";
 
 const PasajeroDetalle = () => {
-  const { cuil } = useParams<{ cuil: string }>();
-  // Inicializamos a null pero tipamos como PasajeroDetail
-  const [pasajero, setPasajero] = useState<PasajeroDetail | null>(null);
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Simular fetch encontrando por CUIL en el mock
-    const found = MOCK_PASAJEROS_DETALLADO.find(p => p.cuil === cuil);
-    if (found) {
-      setPasajero(found);
-    }
-  }, [cuil]);
+  const { data: pasajerosData, isLoading, isError, error } = usePasajero(id!);
+  const pasajero = pasajerosData as PasajeroDetail | undefined;
 
-  if (!pasajero) return <div className="p-8 text-center"><span className="loading loading-spinner loading-lg"></span></div>;
+  if (isLoading) return <div className="p-8 text-center"><span className="loading loading-spinner loading-lg"></span></div>;
+  if (isError) return <div className="alert alert-error">Error al cargar pasajero: {(error as Error).message}</div>;
+  if (!pasajero) return <div className="alert alert-warning">No se encontró el pasajero</div>;
 
   return (
     <PageLayout
@@ -28,7 +22,7 @@ const PasajeroDetalle = () => {
       breadcrumbs={[
         { label: "Inicio", path: "/" },
         { label: "Pasajeros", path: "/pasajeros" },
-        { label: `${pasajero.nombre} ${pasajero.apellido}`, path: `/pasajeros/${pasajero.cuil}` }
+        { label: `${pasajero.nombre} ${pasajero.apellido} `, path: ` / pasajeros / ${pasajero.id} ` }
       ]}
       action={
         <button onClick={() => navigate("/pasajeros")} className="btn btn-ghost btn-sm gap-2">
@@ -45,17 +39,17 @@ const PasajeroDetalle = () => {
               <div className="avatar mb-4">
                 <div className="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
                   <img src={`https://api.dicebear.com/7.x/personas/svg?seed=${pasajero.nombre}`} alt="avatar" />
-                </div>
-              </div>
+                </div >
+              </div >
               <h2 className="card-title text-2xl">{pasajero.nombre} {pasajero.apellido}</h2>
               <p className="text-base-content/70 text-sm">CUIL: {pasajero.cuil}</p>
               <div className="card-actions mt-6 w-full">
-                <Link to={`/pasajeros/${pasajero.cuil}/editar`} className="btn btn-primary btn-outline btn-sm w-full gap-2">
+                <Link to={`/pasajeros/${pasajero.id}/editar`} className="btn btn-primary btn-outline btn-sm w-full gap-2">
                   <Pencil size={14} /> Editar Perfil
                 </Link>
               </div>
-            </div>
-          </div>
+            </div >
+          </div >
 
           <div className="card bg-base-100 shadow-sm border border-base-200">
             <div className="card-body">
@@ -68,8 +62,8 @@ const PasajeroDetalle = () => {
                   <span className="font-medium">{pasajero.fecha_nacimiento}</span>
                 </div>
                 <div className="flex justify-between border-b border-base-200 pb-2">
-                  <span className="text-sm text-base-content/70">Número AD</span>
-                  <span className="font-medium">{pasajero.numero_ad}</span>
+                  <span className="text-sm text-base-content/70">ID Obra Social</span>
+                  <span className="font-medium">{pasajero.identificador_os}</span>
                 </div>
                 <div className="flex justify-between pb-2">
                   <span className="text-sm text-base-content/70">Obra Social</span>
@@ -78,10 +72,10 @@ const PasajeroDetalle = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div >
 
         {/* COLUMNA DERECHA: Facturación */}
-        <div className="lg:col-span-2">
+        < div className="lg:col-span-2" >
           <div className="card bg-base-100 shadow-sm border border-base-200 h-full">
             <div className="card-body">
               <div className="flex justify-between items-center mb-6">
@@ -100,10 +94,10 @@ const PasajeroDetalle = () => {
               <FacturasTable facturas={pasajero.facturas} />
             </div>
           </div>
-        </div>
+        </div >
 
-      </div>
-    </PageLayout>
+      </div >
+    </PageLayout >
   );
 };
 

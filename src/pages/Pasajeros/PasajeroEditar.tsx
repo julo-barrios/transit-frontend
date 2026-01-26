@@ -1,25 +1,29 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { MOCK_PASAJEROS } from "../../mocks/Data";
-import { MOCK_OBRAS_SOCIALES } from "../../mocks/Data";
 import type { Pasajero } from "../../types";
 import PageLayout from "@/components/Layout/PageLayout";
 import DynamicFieldsRenderer from "@/components/DynamicFieldsRenderer";
 import { ArrowLeft, Save, User } from "lucide-react";
+import { usePasajero, useUpdatePasajero } from "@/hooks/usePasajeros";
+import { useObrasSociales } from "@/hooks/useObrasSociales";
 
 export default function PasajeroEditar() {
-  const { cuil } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  // Inicializamos con null, tipado como Pasajero
+
+  // Hooks
+  const { data: pasajeroData, isLoading: loadingPasajero } = usePasajero(id!);
+  const { data: obrasSociales = [] } = useObrasSociales(); // Uses the OS hook now too!
+  const updateMutation = useUpdatePasajero();
+
+  // Local state for form, synced with fetched data
   const [pasajero, setPasajero] = useState<Pasajero | null>(null);
 
   useEffect(() => {
-    // Simular fetch encontrando por CUIL en el mock
-    const found = MOCK_PASAJEROS.find(p => p.cuil === cuil);
-    if (found) {
-      setPasajero(found);
+    if (pasajeroData) {
+      setPasajero(pasajeroData);
     }
-  }, [cuil]);
+  }, [pasajeroData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (pasajero) {
@@ -29,9 +33,8 @@ export default function PasajeroEditar() {
 
   const handleObraSocialChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (pasajero) {
-      const nuevaOS = MOCK_OBRAS_SOCIALES.find(os => os.nombre === e.target.value);
+      const nuevaOS = obrasSociales.find(os => os.nombre === e.target.value);
       if (nuevaOS) {
-        // Al cambiar de OS, podríamos querer limpiar los datos adicionales anteriores
         setPasajero({
           ...pasajero,
           obra_social: nuevaOS,
@@ -55,14 +58,32 @@ export default function PasajeroEditar() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Simulando actualización de pasajero:", pasajero);
-    // Simular delay de red
-    await new Promise(resolve => setTimeout(resolve, 500));
-    // Navegar vuelta al detalle
-    navigate(`/pasajeros/${cuil}`);
+    if (!pasajero || !id) return;
+
+    updateMutation.mutate({
+      id,
+      data: {
+        nombre: pasajero.nombre,
+        apellido: pasajero.apellido,
+        cuil: pasajero.cuil,
+        identificador_os: pasajero.identificador_os,
+        obra_social_id: pasajero.obra_social?.id,
+        datos_adicionales: pasajero.datos_adicionales
+      }
+    }, {
+      onSuccess: () => {
+        navigate(`/pasajeros/${id}`);
+      },
+      onError: (error: any) => {
+        console.error("Error updating pasajero:", error);
+        const errorMsg = error.response?.data?.message || error.response?.data?.error || error.message;
+        alert(`Error al guardar cambios: ${errorMsg}`);
+      }
+    });
   };
 
-  if (!pasajero) return <div className="p-8 text-center"><span className="loading loading-spinner loading-lg text-primary"></span></div>;
+  if (loadingPasajero) return <div className="p-8 text-center"><span className="loading loading-spinner loading-lg text-primary"></span></div>;
+  if (!pasajero) return <div className="alert alert-error">Error al cargar datos del pasajero</div>;
 
   return (
     <PageLayout
@@ -70,11 +91,11 @@ export default function PasajeroEditar() {
       breadcrumbs={[
         { label: "Inicio", path: "/" },
         { label: "Pasajeros", path: "/pasajeros" },
-        { label: `${pasajero.nombre} ${pasajero.apellido}`, path: `/pasajeros/${cuil}` },
+        { label: `${pasajero.nombre} ${pasajero.apellido}`, path: `/pasajeros/${id}` },
         { label: "Editar", path: "#" }
       ]}
       action={
-        <button onClick={() => navigate(`/pasajeros/${cuil}`)} className="btn btn-ghost btn-sm gap-2">
+        <button onClick={() => navigate(`/pasajeros/${id}`)} className="btn btn-ghost btn-sm gap-2">
           <ArrowLeft size={16} /> Cancelar
         </button>
       }
@@ -145,6 +166,21 @@ export default function PasajeroEditar() {
                   />
                 </label>
 
+                {/* ID Obra Social */}
+                <label className="form-control w-full">
+                  <div className="label">
+                    <span className="label-text font-medium">ID Obra Social</span>
+                  </div>
+                  <input
+                    name="identificador_os"
+                    type="text"
+                    value={pasajero.identificador_os}
+                    onChange={handleChange}
+                    className="input input-bordered w-full focus:input-primary"
+                    placeholder="Número de afiliado / ID"
+                  />
+                </label>
+
                 {/* Obra Social */}
                 <label className="form-control w-full">
                   <div className="label">
@@ -152,10 +188,10 @@ export default function PasajeroEditar() {
                   </div>
                   <select
                     className="select select-bordered w-full focus:select-primary"
-                    value={pasajero.obra_social?.nombre}
+                    value={pasajero.obra_social?.nombre || ""}
                     onChange={handleObraSocialChange}
                   >
-                    {MOCK_OBRAS_SOCIALES.map(os => (
+                    {obrasSociales.map(os => (
                       <option key={os.id} value={os.nombre}>{os.nombre}</option>
                     ))}
                   </select>
@@ -174,13 +210,13 @@ export default function PasajeroEditar() {
               <div className="card-actions justify-end mt-8 pt-4 border-t border-base-200">
                 <button
                   type="button"
-                  onClick={() => navigate(`/pasajeros/${cuil}`)}
+                  onClick={() => navigate(`/pasajeros/${id}`)}
                   className="btn btn-ghost"
                 >
                   Cancelar
                 </button>
-                <button type="submit" className="btn btn-primary gap-2">
-                  <Save size={18} /> Guardar Cambios
+                <button type="submit" className="btn btn-primary gap-2" disabled={updateMutation.isPending}>
+                  {updateMutation.isPending ? <span className="loading loading-spinner"></span> : <Save size={18} />} Guardar Cambios
                 </button>
               </div>
             </form>

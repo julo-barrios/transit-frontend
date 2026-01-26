@@ -30,7 +30,7 @@ const FacturaDetalle = () => {
             const foundFactura = MOCK_FACTURAS.find(f => f.id === Number(id));
             if (foundFactura) {
                 setFactura(foundFactura);
-                const foundPasajero = MOCK_PASAJEROS.find(p => p.numero_ad.toString() === foundFactura.nro_ad);
+                const foundPasajero = MOCK_PASAJEROS.find(p => p.identificador_os.toString() === foundFactura.nro_ad);
                 setPasajero(foundPasajero || null);
             }
         }

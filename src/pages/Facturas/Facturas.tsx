@@ -54,7 +54,7 @@ const Facturas = () => {
   // Lógica de filtrado avanzada
   const facturasFiltradas = facturas.filter(f => {
     // Buscamos el pasajero para obtener su nombre y su obra social
-    const pasajero = MOCK_PASAJEROS.find(p => p.numero_ad.toString() === f.nro_ad);
+    const pasajero = MOCK_PASAJEROS.find(p => p.identificador_os.toString() === f.nro_ad);
     const nombreCompleto = `${pasajero?.nombre} ${pasajero?.apellido} `.toLowerCase();
     const nombreOS = pasajero?.obra_social?.nombre || "Sin OS";
 
@@ -133,7 +133,7 @@ const Facturas = () => {
             </thead>
             <tbody>
               {facturasFiltradas.map((f) => {
-                const pasajero = MOCK_PASAJEROS.find(p => p.numero_ad.toString() === f.nro_ad);
+                const pasajero = MOCK_PASAJEROS.find(p => p.identificador_os.toString() === f.nro_ad);
                 return (
                   <tr key={f.id} className="hover:bg-base-200/40 transition-colors">
                     <td>
