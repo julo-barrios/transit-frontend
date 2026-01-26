@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
 import PageLayout from "../components/Layout/PageLayout";
@@ -7,26 +6,18 @@ import FinancialChart from "../components/dashboard/FinancialChart";
 import WorkloadStatus from "../components/dashboard/WorkloadStatus";
 import AccreditationPending from "../components/dashboard/AccreditationPending";
 import CriticalPending from "../components/dashboard/CriticalPending";
-import { dashboardService } from "../services/dashboard";
-import type { DashboardMetricsData } from "../components/dashboard/DashboardMetrics";
+import { useDashboardKpis } from "../hooks/useDashboard";
 
 export default function Home() {
-  const [metrics, setMetrics] = useState<DashboardMetricsData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: metrics, isLoading, isError } = useDashboardKpis();
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const data = await dashboardService.getMetrics();
-        setMetrics(data);
-      } catch (error) {
-        console.error("Error fetching dashboard metrics:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDashboardData();
-  }, []);
+  if (isError) {
+    return (
+      <PageLayout title="Panel de Control" breadcrumbs={[{ label: "Inicio", path: "/" }]}>
+        <div className="alert alert-error">Error al cargar datos del dashboard. Reintente más tarde.</div>
+      </PageLayout>
+    );
+  }
 
   return (
     <PageLayout
@@ -39,11 +30,11 @@ export default function Home() {
       }
     >
       {/* 1. KPIs */}
-      <DashboardMetrics metrics={metrics} loading={loading} />
+      <DashboardMetrics metrics={metrics || null} loading={isLoading} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
-          {/* Gráfico de Facturación */}
+          {/* Gráfico de Facturación (Refactorizar para usar hook interno si es necesario, o pasar data por props) */}
           <FinancialChart />
 
           {/* 3. WIDGET ESPECÍFICO: ESTADO DE CARGA */}

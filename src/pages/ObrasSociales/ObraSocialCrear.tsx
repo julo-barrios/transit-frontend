@@ -2,23 +2,32 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageLayout from "../../components/Layout/PageLayout";
 import { ArrowLeft, Save, Building2 } from "lucide-react";
+import { useCreateObraSocial } from "../../hooks/useObrasSociales";
 
 const ObraSocialCrear = () => {
     const navigate = useNavigate();
     const [nombre, setNombre] = useState("");
-    const [loading, setLoading] = useState(false);
+
+    // React Query Mutation
+    const createMutation = useCreateObraSocial();
+    const loading = createMutation.isPending;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
 
-        // Simular POST a API
-        console.log("Creando obra social:", { nombre });
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-        alert("Obra social creada con éxito (simulación)");
-        setLoading(false);
-        navigate("/obras-sociales");
+        createMutation.mutate({
+            nombre,
+            configuracion_pasajeros: [] // Inicialmente vacío o agregar lógica de campos dinámicos
+        }, {
+            onSuccess: () => {
+                alert("Obra social creada con éxito");
+                navigate("/obras-sociales");
+            },
+            onError: (error) => {
+                console.error("Error al crear:", error);
+                alert("Hubo un error al crear la obra social");
+            }
+        });
     };
 
     return (

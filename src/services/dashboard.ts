@@ -1,87 +1,148 @@
 
-import { MOCK_PASAJEROS, MOCK_FACTURAS, MOCK_OBRAS_SOCIALES } from "../mocks/Data";
+import api from "@/api/axios";
+import type { DashboardMetricsData } from "../components/dashboard/DashboardMetrics";
 import type { AccreditationPendingItem, WorkloadItem } from "../types";
 
-// Simulate network delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+interface RawWorkloadItem {
+    social_work_id: number;
+    name: string;
+    loaded_count: number;
+    total_passengers: number;
+}
+
+interface RawFinancialItem {
+    period: string;
+    amount: number;
+    accredited_amount?: number;
+}
+
+interface RawInvoiceItem {
+    id: number;
+    updated_at: string;
+    created_at: string;
+    letter?: string;
+    branch?: string;
+    number: string;
+    passenger?: {
+        full_name?: string;
+        first_name?: string;
+        last_name?: string;
+    };
+    social_work?: {
+        name: string;
+    };
+}
 
 export const dashboardService = {
-    getMetrics: async () => {
-        await delay(300);
+    getMetrics: async (period?: string): Promise<DashboardMetricsData> => {
+        try {
+            const { data } = await api.get('/dashboard/kpis', { params: { period } });
 
-        // Calculate real numbers from mocks
-        const activePassengers = MOCK_PASAJEROS.length;
-        const estimatedRevenue = MOCK_FACTURAS.reduce((sum, f) => sum + f.importe_total, 0);
-        const pendingCollection = MOCK_FACTURAS.filter(f => !f.acreditada).reduce((sum, f) => sum + f.importe_total, 0);
-
-        const facturasCargadas = MOCK_FACTURAS.filter(f => f.periodo_desde === "2023-12").length; // Example logic
-        const goal = 150; // Hardcoded goal for now
-
-        return {
-            activePassengers,
-            estimatedRevenue,
-            pendingCollection,
-            invoicesStatus: {
-                loaded: facturasCargadas,
-                goal: goal
-            }
-        };
-    },
-
-    getWorkloadStatus: async (): Promise<WorkloadItem[]> => {
-        await delay(300);
-        // Use the logic that was in WorkloadStatus.tsx
-        const stats = MOCK_OBRAS_SOCIALES.map(os => {
-            // Logic simplified for mock service
             return {
-                id: os.id,
-                nombre: os.nombre,
-                completado: Math.floor(Math.random() * 20),
-                total: 20
+                estimatedRevenue: data.estimated_revenue,
+                pendingCollection: data.pending_collection,
+                activePassengers: data.active_passengers,
+                invoicesStatus: {
+                    loaded: data.invoices_loaded,
+                    goal: data.invoices_target
+                }
             };
-        });
-        return stats;
+        } catch (error) {
+            console.error("Error fetching dashboard metrics:", error);
+            throw error;
+        }
     },
 
-    getFinancialHistory: async () => {
-        await delay(300);
-        return [
-            { name: 'Ago', facturado: 85000, acreditado: 85000 },
-            { name: 'Sep', facturado: 92000, acreditado: 92000 },
-            { name: 'Oct', facturado: 75000, acreditado: 50000 },
-            { name: 'Nov', facturado: 110000, acreditado: 10000 },
-            { name: 'Dic', facturado: 98000, acreditado: 98000 },
-        ];
+    getWorkloadStatus: async (period?: string): Promise<WorkloadItem[]> => {
+        try {
+            const { data } = await api.get('/dashboard/workload', { params: { period } });
+
+            // Map API response to UI type if key names differ
+            return (data || []).map((item: RawWorkloadItem) => ({
+                id: item.social_work_id,
+                nombre: item.name,
+                completado: item.loaded_count,
+                total: item.total_passengers
+            }));
+        } catch (error) {
+            console.error("Error fetching workload:", error);
+            throw error;
+        }
+    },
+
+    getFinancialHistory: async (months: number = 6) => {
+        try {
+            const { data } = await api.get('/dashboard/financial-evolution', { params: { months } });
+
+            // Map API response [ { period: '2023-10', amount: 980000 } ] 
+            // to UI format [ { name: 'Oct', facturado: 980000, acreditado: 0 } ]
+            // Note: 'acreditado' might need another endpoint or field if available. 
+            // For now mapping 'amount' to 'facturado'.
+            return (data || []).map((item: RawFinancialItem) => {
+                const date = new Date(item.period + '-01'); // Force YYYY-MM-01
+                const monthName = date.toLocaleString('es-ES', { month: 'short' });
+                const name = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+
+                return {
+                    name: name,
+                    facturado: item.amount,
+                    acreditado: item.accredited_amount || 0 // Assuming API might provide this or default to 0
+                };
+            });
+        } catch (error) {
+            console.error("Error fetching financial evolution:", error);
+            throw error;
+        }
     },
 
     getCriticalPending: async () => {
-        await delay(300);
-        return [
-            { id: 101, nombre: "Julian Barrios", os: "OSECAC", periodo: "Dic 2023" },
-            { id: 102, nombre: "Marta Rodriguez", os: "OSDE", periodo: "Dic 2023" },
-            { id: 103, nombre: "Ricardo Darín", os: "PAMI", periodo: "Nov 2023" },
-        ];
+        try {
+            const { data } = await api.get('/dashboard/invoices', {
+                params: {
+                    status: 'Error',
+                    limit: 5,
+                    sort: 'updated_at:desc'
+                }
+            });
+
+            return (data || []).map((item: RawInvoiceItem) => ({
+                id: item.id,
+                nombre: item.passenger?.full_name || 'Desconocido',
+                os: item.social_work?.name || 'S/D', // Depending on API structure
+                periodo: new Date(item.updated_at).toLocaleDateString() // Or logic to show period
+            }));
+        } catch (error) {
+            console.error("Error fetching critical pending:", error);
+            throw error;
+        }
     },
 
     getAccreditationPending: async (): Promise<AccreditationPendingItem[]> => {
-        await delay(300);
-        const facturasPendientes = MOCK_FACTURAS.filter(f => f.estado === "Enviada" && !f.acreditada)
-            .sort((a, b) => new Date(a.fecha_factura).getTime() - new Date(b.fecha_factura).getTime());
-
-        return facturasPendientes.map(f => {
-            const pasajero = MOCK_PASAJEROS.find(p => p.numero_ad.toString() === f.nro_ad);
-            return {
-                id: f.id,
-                letra: f.letra,
-                sucursal: f.sucursal,
-                numero: f.numero,
-                fecha_factura: f.fecha_factura,
-                pasajero: {
-                    nombre: pasajero?.nombre || "Desconocido",
-                    apellido: pasajero?.apellido || "",
-                    obra_social: pasajero?.obra_social?.nombre || "S/D"
+        try {
+            const { data } = await api.get('/dashboard/invoices', {
+                params: {
+                    status: 'Enviada',
+                    accredited: 'false',
+                    limit: 5,
+                    sort: 'created_at:asc'
                 }
-            };
-        });
+            });
+
+            return (data || []).map((f: RawInvoiceItem) => ({
+                id: f.id,
+                letra: f.letter || 'A', // Assuming API provides letter
+                sucursal: f.branch || '0001',
+                numero: f.number.split('-')[1] || f.number,
+                fecha_factura: f.created_at, // or issue_date
+                pasajero: {
+                    nombre: f.passenger?.first_name || "Desconocido",
+                    apellido: f.passenger?.last_name || "",
+                    obra_social: f.social_work?.name || "S/D"
+                }
+            }));
+        } catch (error) {
+            console.error("Error fetching accreditation pending:", error);
+            throw error;
+        }
     }
 };

@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Building2, CalendarDays } from "lucide-react";
-import { dashboardService } from "../../services/dashboard";
+import { useWorkload } from "../../hooks/useDashboard";
 import type { WorkloadItem } from "../../types";
 
 type WorkloadUIItem = WorkloadItem & {
@@ -12,8 +12,9 @@ type WorkloadUIItem = WorkloadItem & {
 export default function WorkloadStatus() {
     const navigate = useNavigate();
     const [periodoEstadoCarga, setPeriodoEstadoCarga] = useState("2023-12");
-    const [statsObrasSociales, setStatsObrasSociales] = useState<WorkloadUIItem[]>([]);
-    const [loading, setLoading] = useState(true);
+
+    // React Query Hook
+    const { data, isLoading } = useWorkload(periodoEstadoCarga);
 
     const opcionesPeriodos = [
         { value: "2023-12", label: "Diciembre 2023" },
@@ -21,29 +22,15 @@ export default function WorkloadStatus() {
         { value: "2023-10", label: "Octubre 2023" },
     ];
 
-    useEffect(() => {
-        const loadStats = async () => {
-            try {
-                // In a real app we would pass the period to the service
-                const data = await dashboardService.getWorkloadStatus();
-                // Map the simple service data to the UI needs (calculating colors etc)
-                const processed = data.map((item) => {
-                    const faltantes = item.total - item.completado;
-                    return {
-                        ...item,
-                        faltante: faltantes,
-                        color: faltantes > 0 ? (faltantes > 2 ? "progress-error" : "progress-warning") : "progress-success"
-                    };
-                });
-                setStatsObrasSociales(processed);
-            } catch (error) {
-                console.error("Error loading workload:", error);
-            } finally {
-                setLoading(false);
-            }
+    // Transformation Logic (memoized effectively by React render cycle or useMemo if heavy)
+    const statsObrasSociales: WorkloadUIItem[] = (data || []).map((item) => {
+        const faltantes = item.total - item.completado;
+        return {
+            ...item,
+            faltante: faltantes,
+            color: faltantes > 0 ? (faltantes > 2 ? "progress-error" : "progress-warning") : "progress-success"
         };
-        loadStats();
-    }, [periodoEstadoCarga]);
+    });
 
     return (
         <div className="card bg-base-100 border border-base-200 shadow-sm">
@@ -69,7 +56,7 @@ export default function WorkloadStatus() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {loading ? <div className="col-span-3 text-center py-8"><span className="loading loading-spinner"></span></div> : statsObrasSociales.map((item, idx) => (
+                    {isLoading ? <div className="col-span-3 text-center py-8"><span className="loading loading-spinner"></span></div> : statsObrasSociales.map((item, idx) => (
                         <div
                             key={idx}
                             className="p-4 rounded-2xl border border-base-200 hover:border-primary/50 hover:shadow-md transition-all cursor-pointer bg-base-50/30 group"

@@ -1,15 +1,13 @@
 import { Link } from "react-router-dom";
 import { Clock } from "lucide-react";
-import { useEffect, useState } from "react";
-import { dashboardService } from "../../services/dashboard";
-import PendingItem from "./PendingItem";
+import { usePendingLists } from "../../hooks/useDashboard";
+import PendingItem, { type PendingItemData } from "./PendingItem";
 
 export default function CriticalPending() {
-    const [pendingItems, setPendingItems] = useState<{ id: number; nombre: string; os: string; periodo: string }[]>([]);
+    const { critical } = usePendingLists();
+    const { data: pendingItems = [], isLoading } = critical;
 
-    useEffect(() => {
-        dashboardService.getCriticalPending().then(setPendingItems);
-    }, []);
+    if (isLoading) return <div className="card bg-base-100 border border-base-200 shadow-sm p-10 flex justify-center"><span className="loading loading-spinner"></span></div>;
 
     return (
         <div className="card bg-base-100 border border-base-200 shadow-sm overflow-hidden">
@@ -23,7 +21,7 @@ export default function CriticalPending() {
             </div>
             <div className="card-body p-5">
                 <div className="space-y-3">
-                    {pendingItems.map((p) => (
+                    {pendingItems.map((p: PendingItemData) => (
                         <PendingItem key={p.id} item={p} />
                     ))}
                 </div>

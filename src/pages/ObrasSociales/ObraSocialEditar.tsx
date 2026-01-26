@@ -1,41 +1,52 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PageLayout from "../../components/Layout/PageLayout";
-import { MOCK_OBRAS_SOCIALES } from "../../mocks/Data";
 import { ArrowLeft, Save, Building2 } from "lucide-react";
 import type { ObraSocial } from "@/types";
 import SchemaBuilder from "@/components/SchemaBuilder";
+import { useObraSocial, useUpdateObraSocial } from "../../hooks/useObrasSociales";
 
 const ObraSocialEditar = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [obraSocial, setObraSocial] = useState<ObraSocial | null>(null);
-    const [loading, setLoading] = useState(false);
 
+    // React Query Hooks
+    const { data: obraSocialData, isLoading: isLoadingData } = useObraSocial(id!);
+    const updateMutation = useUpdateObraSocial();
+
+    // Local state for form handling
+    const [obraSocial, setObraSocial] = useState<ObraSocial | null>(null);
+
+    // Sync data to local state when fetched
     useEffect(() => {
-        // Simular fetch
-        const found = MOCK_OBRAS_SOCIALES.find(os => os.id === Number(id));
-        if (found) {
-            setObraSocial(found);
+        if (obraSocialData) {
+            setObraSocial(obraSocialData);
         }
-    }, [id]);
+    }, [obraSocialData]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!obraSocial) return;
+        if (!obraSocial || !id) return;
 
-        setLoading(true);
-
-        // Simular PUT a API
-        console.log("Actualizando obra social:", obraSocial);
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-        // alert("Obra social actualizada (simulación)");
-        setLoading(false);
-        navigate("/obras-sociales");
+        updateMutation.mutate({
+            id,
+            data: {
+                nombre: obraSocial.nombre,
+                configuracion_pasajeros: obraSocial.configuracion_pasajeros
+            }
+        }, {
+            onSuccess: () => {
+                alert("Obra social actualizada con éxito");
+                navigate("/obras-sociales");
+            },
+            onError: (error) => {
+                console.error("Error al actualizar:", error);
+                alert("Error al actualizar la obra social");
+            }
+        });
     };
 
-    if (!obraSocial && id) return <div className="p-8 text-center">Cargando...</div>;
+    if (isLoadingData) return <div className="p-8 text-center"><span className="loading loading-spinner loading-lg"></span></div>;
     if (!obraSocial) return <div className="p-8 text-center">No encontrada</div>;
 
     return (
@@ -92,9 +103,9 @@ const ObraSocialEditar = () => {
                                 <button
                                     type="submit"
                                     className="btn btn-primary gap-2"
-                                    disabled={loading}
+                                    disabled={updateMutation.isPending}
                                 >
-                                    {loading ? <span className="loading loading-spinner"></span> : <Save size={18} />}
+                                    {updateMutation.isPending ? <span className="loading loading-spinner"></span> : <Save size={18} />}
                                     Guardar Cambios
                                 </button>
                             </div>

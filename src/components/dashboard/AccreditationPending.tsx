@@ -1,23 +1,25 @@
 
 import { Link } from "react-router-dom";
 import { AlertCircle } from "lucide-react";
-import { useEffect, useState } from "react";
-import { dashboardService } from "../../services/dashboard";
+import { useQueryClient } from "@tanstack/react-query";
+import { usePendingLists } from "../../hooks/useDashboard";
 import { facturasService } from "../../services/facturas";
 import PendingAccreditationItem from "./PendingAccreditationItem";
 import ConfirmationModal from "../../components/ConfirmationModal";
-import type { AccreditationPendingItem } from "../../types";
+import { useState } from "react";
 
 export default function AccreditationPending() {
-    const [facturasPendientesCobro, setFacturasPendientesCobro] = useState<AccreditationPendingItem[]>([]);
+    const queryClient = useQueryClient();
+    const { accreditation } = usePendingLists();
+    const { data: facturasPendientesCobro = [], isLoading } = accreditation;
+
     const [confirmationModal, setConfirmationModal] = useState<{ isOpen: boolean; invoiceId: number | null }>({
         isOpen: false,
         invoiceId: null
     });
 
-    useEffect(() => {
-        dashboardService.getAccreditationPending().then(setFacturasPendientesCobro);
-    }, []);
+    // Loading state handled in render
+    if (isLoading) return <div className="card bg-base-100 border border-base-200 shadow-sm p-10 flex justify-center"><span className="loading loading-spinner"></span></div>;
 
     const handleAccredit = (id: number) => {
         console.log("Opening modal for invoice:", id);
@@ -30,8 +32,10 @@ export default function AccreditationPending() {
 
         try {
             await facturasService.update(id, { acreditada: true });
-            // Remove from list optimistically or re-fetch
-            setFacturasPendientesCobro(prev => prev.filter(f => f.id !== id));
+            // Invalidate query to refetch fresh data
+            queryClient.invalidateQueries({ queryKey: ['dashboard', 'accreditation_pending'] });
+            // Also update KPIs as pending collection decreases
+            queryClient.invalidateQueries({ queryKey: ['dashboard', 'kpis'] });
         } catch (error) {
             console.error("Failed to accredit invoice", error);
         }

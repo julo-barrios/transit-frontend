@@ -9,17 +9,12 @@ import {
     ResponsiveContainer,
     Legend
 } from 'recharts';
-import { useEffect, useState } from "react";
-import { dashboardService } from "../../services/dashboard";
+import { useFinancialEvolution } from "../../hooks/useDashboard";
 
 export default function FinancialChart() {
-    const [data, setData] = useState<{ name: string; facturado: number; acreditado: number }[]>([]);
+    const { data, isLoading } = useFinancialEvolution();
 
-    useEffect(() => {
-        dashboardService.getFinancialHistory().then(setData);
-    }, []);
-
-    if (!data.length) return <div className="h-80 w-full flex items-center justify-center"><span className="loading loading-spinner loading-lg"></span></div>;
+    if (isLoading || !data) return <div className="h-80 w-full flex items-center justify-center"><span className="loading loading-spinner loading-lg"></span></div>;
 
     return (
         <div className="card bg-base-100 border border-base-200 p-6 shadow-sm">

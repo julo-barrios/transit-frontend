@@ -1,13 +1,15 @@
 import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
 
+export interface PendingItemData {
+    id: number;
+    nombre: string;
+    os: string;
+    periodo: string;
+}
+
 interface PendingItemProps {
-    item: {
-        id: number;
-        nombre: string;
-        os: string;
-        periodo: string;
-    };
+    item: PendingItemData;
 }
 
 export default function PendingItem({ item }: PendingItemProps) {

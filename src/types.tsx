@@ -33,6 +33,9 @@ export interface ObraSocial {
   datos_adicionales?: Record<string, unknown>;
 }
 
+export type CreateObraSocialPayload = Omit<ObraSocial, "id">;
+export type UpdateObraSocialPayload = Partial<ObraSocial>;
+
 export interface Pasajero {
   id: number;
   nombre: string;

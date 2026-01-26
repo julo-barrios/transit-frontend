@@ -56,6 +56,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             {/* Menú de Navegación Desktop */}
             <div className="flex-1 py-6 px-4 space-y-8 overflow-y-auto overflow-x-hidden">
               <div>
+                <div className={`flex items-center gap-3 mb-8 ${isCollapsed ? "justify-center" : "px-2"}`}>
+                  <div className="bg-primary/10 text-primary p-2 rounded-lg shrink-0">
+                    <img src="/nexos_logo.svg" alt="NexOS" className="w-6 h-6 object-contain" />
+                  </div>
+                  {!isCollapsed && <span className="font-black text-xl tracking-tight text-primary">NexOS</span>}
+                </div>
+
                 {!isCollapsed && (
                   <p className="px-4 mb-4 text-[10px] font-bold uppercase tracking-[0.2em] text-base-content/40">
                     Menú Principal
@@ -168,10 +175,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="menu p-4 w-80 min-h-full bg-base-100 text-base-content flex flex-col">
           {/* Logo / Header Mobile */}
           <div className="mb-6 px-2 flex items-center gap-2">
-            <div className="bg-primary text-primary-content p-2 rounded-lg">
-              <Building2 size={24} />
+            <div className="bg-primary/10 p-2 rounded-lg">
+              <img src="/nexos_logo.svg" alt="NexOS" className="w-8 h-8 object-contain" />
             </div>
-            <span className="font-black text-xl tracking-tight">Transportes Julo</span>
+            <span className="font-black text-xl tracking-tight text-primary">NexOS</span>
           </div>
 
           <ul className="space-y-2 flex-1">

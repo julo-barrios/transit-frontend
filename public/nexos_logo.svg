@@ -1,0 +1,17 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="nexos_gradient" x1="40" y1="40" x2="216" y2="216" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#1E40AF" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <g filter="url(#glow)">
+    <path fill-rule="evenodd" clip-rule="evenodd" 
+      d="M64 40C50.745 40 40 50.745 40 64V192C40 205.255 50.745 216 64 216C77.255 216 88 205.255 88 192V109.25L168 216H192C205.255 216 216 205.255 216 192V64C216 50.745 205.255 40 192 40C178.745 40 168 50.745 168 64V146.75L88 40H64Z" 
+      fill="url(#nexos_gradient)"/>
+  </g>
+</svg>
