@@ -1,27 +1,25 @@
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PageLayout from "../../components/Layout/PageLayout";
-import { MOCK_OBRAS_SOCIALES } from "../../mocks/Data";
 import { Plus, Pencil, Trash2, Building2 } from "lucide-react";
-import type { ObraSocial } from "../../types";
+import { useObrasSociales, useDeleteObraSocial } from "../../hooks/useObrasSociales";
 
 const ObrasSociales = () => {
-    const [obrasSociales, setObrasSociales] = useState<ObraSocial[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        // Simular carga de datos
-        setTimeout(() => {
-            setObrasSociales(MOCK_OBRAS_SOCIALES);
-            setLoading(false);
-        }, 500);
-    }, []);
+    // Hooks
+    const { data: obrasSociales = [], isLoading: loading } = useObrasSociales();
+    const deleteMutation = useDeleteObraSocial();
 
     const handleDelete = (id: number) => {
         if (window.confirm("¿Estás seguro de que deseas eliminar esta obra social?")) {
-            // Simular eliminación
-            setObrasSociales(prev => prev.filter(os => os.id !== id));
-            alert("Obra social eliminada (simulacion)");
+            deleteMutation.mutate(id, {
+                onSuccess: () => {
+                    // Toast or alert handled by hook or global config usually, but adding alert for consistency with old behavior if needed or just silent
+                    // User asked to use service, assuming standard behavior.
+                },
+                onError: (error) => {
+                    console.error("Error deleting:", error);
+                    alert("Error al eliminar la obra social");
+                }
+            });
         }
     };
 

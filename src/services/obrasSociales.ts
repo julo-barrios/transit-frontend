@@ -43,7 +43,15 @@ export const obrasSocialesService = {
 
     create: async (payload: CreateObraSocialPayload): Promise<ObraSocial> => {
         try {
-            const { data } = await api.post('/obras-sociales', payload);
+            const apiPayload = {
+                ...payload,
+                configuracion_campos: payload.configuracion_pasajeros
+            };
+            // Remove frontend-only key if desired, though usually ignored by backend. 
+            // Better to keep it clean:
+            delete (apiPayload as any).configuracion_pasajeros;
+
+            const { data } = await api.post('/obras-sociales', apiPayload);
             return data;
         } catch (error) {
             console.error("Error creating obra social:", error);
@@ -53,7 +61,13 @@ export const obrasSocialesService = {
 
     update: async (id: number | string, payload: UpdateObraSocialPayload): Promise<ObraSocial> => {
         try {
-            const { data } = await api.put(`/obras-sociales/${id}`, payload);
+            const apiPayload = {
+                ...payload,
+                configuracion_campos: payload.configuracion_pasajeros
+            };
+            delete (apiPayload as any).configuracion_pasajeros;
+
+            const { data } = await api.put(`/obras-sociales/${id}`, apiPayload);
             return data;
         } catch (error) {
             console.error(`Error updating obra social ${id}:`, error);
