@@ -66,6 +66,7 @@ export default function PasajeroEditar() {
         nombre: pasajero.nombre,
         apellido: pasajero.apellido,
         cuil: pasajero.cuil,
+        fecha_nacimiento: pasajero.fecha_nacimiento,
         identificador_os: pasajero.identificador_os,
         obra_social_id: pasajero.obra_social?.id,
         datos_adicionales: pasajero.datos_adicionales
@@ -74,6 +75,7 @@ export default function PasajeroEditar() {
       onSuccess: () => {
         navigate(`/pasajeros/${id}`);
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onError: (error: any) => {
         console.error("Error updating pasajero:", error);
         const errorMsg = error.response?.data?.message || error.response?.data?.error || error.message;
@@ -148,6 +150,20 @@ export default function PasajeroEditar() {
                     onChange={handleChange}
                     className="input input-bordered w-full focus:input-primary"
                     placeholder="Apellido"
+                  />
+                </label>
+
+                {/* Fecha de Nacimiento */}
+                <label className="form-control w-full">
+                  <div className="label">
+                    <span className="label-text font-medium">Fecha de Nacimiento</span>
+                  </div>
+                  <input
+                    name="fecha_nacimiento"
+                    type="date"
+                    value={pasajero.fecha_nacimiento?.split('T')[0] || ""}
+                    onChange={handleChange}
+                    className="input input-bordered w-full focus:input-primary"
                   />
                 </label>
 

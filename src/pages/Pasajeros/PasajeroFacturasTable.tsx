@@ -61,13 +61,7 @@ const FacturasTable = ({ facturas }: { facturas: Factura[] }) => {
               {index + 1}
             </button>
           ))}
-          <button
-            key={2}
-            className={`join-item btn ${currentPage === 2 ? "btn-active" : ""}`}
-            onClick={() => setCurrentPage(2)}
-          >
-            {1 + 1}
-          </button>
+
         </div>
       </div>
     </div>

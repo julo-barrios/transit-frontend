@@ -53,6 +53,7 @@ export interface CreatePasajeroPayload {
   nombre: string;
   apellido: string;
   cuil: string;
+  fecha_nacimiento: string;
   identificador_os: string;
   obra_social_id: number;
   datos_adicionales?: Record<string, unknown>;

@@ -18,6 +18,7 @@ export default function PasajeroCrear() {
     nombre: "",
     apellido: "",
     cuil: "",
+    fecha_nacimiento: "",
     identificador_os: "",
     obra_social: null as ObraSocial | null,
     datos_adicionales: {} as Record<string, unknown>
@@ -54,6 +55,7 @@ export default function PasajeroCrear() {
       nombre: formData.nombre,
       apellido: formData.apellido,
       cuil: formData.cuil, // Added CUIL support
+      fecha_nacimiento: formData.fecha_nacimiento,
       identificador_os: formData.identificador_os,
       obra_social_id: formData.obra_social.id,
       datos_adicionales: formData.datos_adicionales
@@ -135,6 +137,21 @@ export default function PasajeroCrear() {
                     onChange={handleChange}
                     className="input input-bordered w-full focus:input-primary"
                     placeholder="Apellido"
+                    required
+                  />
+                </label>
+
+                {/* Fecha de Nacimiento */}
+                <label className="form-control w-full">
+                  <div className="label">
+                    <span className="label-text font-medium">Fecha de Nacimiento</span>
+                  </div>
+                  <input
+                    name="fecha_nacimiento"
+                    type="date"
+                    value={formData.fecha_nacimiento}
+                    onChange={handleChange}
+                    className="input input-bordered w-full focus:input-primary"
                     required
                   />
                 </label>

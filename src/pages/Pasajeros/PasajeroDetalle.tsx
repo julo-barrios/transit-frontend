@@ -69,6 +69,17 @@ const PasajeroDetalle = () => {
                   <span className="text-sm text-base-content/70">Obra Social</span>
                   <span className="badge badge-neutral">{pasajero.obra_social?.nombre || "N/A"}</span>
                 </div>
+
+                {/* Campos Dinámicos de Obra Social */}
+                {pasajero.obra_social?.configuracion_pasajeros?.map((campo) => {
+                  const valor = pasajero.datos_adicionales?.[campo.key];
+                  return (
+                    <div key={campo.key} className="flex justify-between border-t border-base-200 pt-2 pb-2">
+                      <span className="text-sm text-base-content/70">{campo.label}</span>
+                      <span className="font-medium text-right">{valor ? String(valor) : "-"}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
