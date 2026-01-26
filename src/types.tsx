@@ -62,22 +62,29 @@ export interface CreatePasajeroPayload {
 export type UpdatePasajeroPayload = Partial<CreatePasajeroPayload>;
 
 export interface Factura {
-  id: number;
+  id: string;
+  cliente_id: string;
   fecha_factura: string;
   fecha_cai: string;
   periodo_desde: string;
   importe_total: number;
+  kilometros: number;
   cai: string;
   letra: string;
   sucursal: string;
   numero: string;
-  identificador_os: string;
   pdf_path: string;
   created_at: string;
   acreditada?: boolean;
   fecha_acreditacion?: string;
   estado: "Enviada" | "Procesando ARCA" | "Error" | "Pagada" | "Pendiente";
+  planilla_path?: string;
+  pasajero_nombre?: string;
+  obra_social_nombre?: string;
 }
+
+export type CreateFacturaPayload = Omit<Factura, "id" | "estado" | "created_at" | "acreditada" | "fecha_acreditacion" | "fecha_factura" | "fecha_cai" | "cai" | "letra" | "sucursal" | "numero" | "pdf_path" | "planilla_path"> & { file?: File };
+export type UpdateFacturaPayload = Partial<Factura>;
 
 export interface PasajeroDetail extends Pasajero {
   facturas: Factura[];

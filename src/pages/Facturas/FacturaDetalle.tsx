@@ -1,8 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import PageLayout from "../../components/Layout/PageLayout";
-import { MOCK_FACTURAS, MOCK_PASAJEROS } from "../../mocks/Data";
-import { facturasService } from "../../services/facturas";
 import {
     ArrowLeft,
     FileText,
@@ -15,42 +13,28 @@ import {
     Download
 } from "lucide-react";
 import ConfirmationModal from "../../components/ConfirmationModal";
-import type { FacturaExtended } from "../../mocks/Data";
-import type { Pasajero } from "../../types";
+import { useFactura, useUpdateFactura } from "@/hooks/useFacturas";
+import { usePasajeros } from "@/hooks/usePasajeros";
 
 const FacturaDetalle = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [factura, setFactura] = useState<FacturaExtended | null>(null);
-    const [pasajero, setPasajero] = useState<Pasajero | null>(null);
+
+    // Fetch Factura
+    const { data: factura, isLoading: loadingFactura } = useFactura(id!);
+
+    // Fetch Pasajeros for name lookup
+    const { data: pasajeros = [] } = usePasajeros();
+
+    // Mutations
+    const updateMutation = useUpdateFactura();
+
     const [showConfirmation, setShowConfirmation] = useState(false);
 
-    useEffect(() => {
-        if (id) {
-            const foundFactura = MOCK_FACTURAS.find(f => f.id === Number(id));
-            if (foundFactura) {
-                setFactura(foundFactura);
-                const foundPasajero = MOCK_PASAJEROS.find(p => p.identificador_os.toString() === foundFactura.identificador_os);
-                setPasajero(foundPasajero || null);
-            }
-        }
-    }, [id]);
-
-    if (!factura) {
-        return (
-            <PageLayout title="Detalle de Factura" breadcrumbs={[
-                { label: "Inicio", path: "/" },
-                { label: "Facturas", path: "/facturas" },
-                { label: "Detalle", path: "/facturas" }
-            ]}>
-                <div className="flex flex-col items-center justify-center h-64 opacity-50">
-                    <FileText size={48} className="mb-4" />
-                    <p>Factura no encontrada</p>
-                    <button onClick={() => navigate("/facturas")} className="btn btn-ghost mt-4">Volver</button>
-                </div>
-            </PageLayout>
-        );
-    }
+    // Derived State
+    const pasajero = factura
+        ? pasajeros.find(p => p.identificador_os.toString() === factura.identificador_os)
+        : null;
 
     const renderStatusBadge = (estado: string) => {
         switch (estado) {
@@ -68,12 +52,36 @@ const FacturaDetalle = () => {
     const confirmAccreditation = async () => {
         if (!factura) return;
         try {
-            await facturasService.update(factura.id, { acreditada: true });
-            setFactura(prev => prev ? { ...prev, acreditada: true, fecha_acreditacion: new Date().toISOString() } : null);
+            updateMutation.mutate({
+                id: factura.id,
+                data: {
+                    acreditada: true,
+                    fecha_acreditacion: new Date().toISOString().split('T')[0]
+                }
+            });
+            setShowConfirmation(false);
         } catch (error) {
             console.error("Error al acreditar:", error);
         }
     };
+
+    if (loadingFactura) return <div className="p-8 text-center"><span className="loading loading-spinner loading-lg"></span></div>;
+
+    if (!factura) {
+        return (
+            <PageLayout title="Detalle de Factura" breadcrumbs={[
+                { label: "Inicio", path: "/" },
+                { label: "Facturas", path: "/facturas" },
+                { label: "Detalle", path: "/facturas" }
+            ]}>
+                <div className="flex flex-col items-center justify-center h-64 opacity-50">
+                    <FileText size={48} className="mb-4" />
+                    <p>Factura no encontrada</p>
+                    <button onClick={() => navigate("/facturas")} className="btn btn-ghost mt-4">Volver</button>
+                </div>
+            </PageLayout>
+        );
+    }
 
     return (
         <PageLayout
@@ -113,9 +121,15 @@ const FacturaDetalle = () => {
                         )}
 
                         {/* Mock Download Button - No PDF generation */}
-                        <button className="btn btn-square btn-ghost border border-base-300" title="Descargar PDF (Mock)">
+                        <a
+                            href={factura.pdf_path}
+                            target="_blank"
+                            rel="noreferrer"
+                            className={`btn btn-square btn-ghost border border-base-300 ${!factura.pdf_path ? 'btn-disabled opacity-50' : ''}`}
+                            title="Descargar PDF"
+                        >
                             <Download size={20} />
-                        </button>
+                        </a>
                     </div>
                 </div>
 
@@ -131,15 +145,10 @@ const FacturaDetalle = () => {
                                     <CreditCard size={16} /> Detalles Económicos
                                 </h3>
 
-                                <div className="grid grid-cols-2 gap-8">
+                                <div className="grid grid-cols-1 gap-8">
                                     <div>
                                         <p className="text-xs font-bold uppercase opacity-50 mb-1">Total Facturado</p>
-                                        <p className="text-4xl font-black text-primary">${factura.importe_total.toLocaleString('es-AR')}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-bold uppercase opacity-50 mb-1">Kilómetros</p>
-                                        <p className="text-2xl font-bold font-mono">{factura.kilometros} KM</p>
-                                        <p className="text-xs opacity-50">Recorridos en el periodo</p>
+                                        <p className="text-4xl font-black text-primary">${Number(factura.importe_total).toLocaleString('es-AR')}</p>
                                     </div>
                                 </div>
 
@@ -177,7 +186,9 @@ const FacturaDetalle = () => {
                                             <p className="text-sm opacity-70 mb-2">CUIL: {pasajero.cuil}</p>
                                             <div className="badge badge-outline gap-2">
                                                 <Building2 size={12} />
-                                                {pasajero.obra_social?.nombre || "OSECAC"}
+                                                {pasajero.obra_social && typeof pasajero.obra_social !== 'string'
+                                                    ? pasajero.obra_social.nombre
+                                                    : (typeof pasajero.obra_social === 'string' ? pasajero.obra_social : "OSECAC")}
                                             </div>
                                         </div>
                                     </div>
@@ -194,7 +205,11 @@ const FacturaDetalle = () => {
                                 <ul className="steps steps-vertical text-sm">
                                     <li className="step step-primary">Peticion de factura ({factura.fecha_factura})</li>
                                     <li className="step step-primary">Factura generada</li>
-                                    <li className="step step-primary">Envío a {pasajero?.obra_social?.nombre}</li>
+                                    <li className="step step-primary">Envío a {
+                                        pasajero?.obra_social && typeof pasajero.obra_social !== 'string'
+                                            ? pasajero.obra_social.nombre
+                                            : (typeof pasajero?.obra_social === 'string' ? pasajero.obra_social : "OS")
+                                    }</li>
                                     <li className={`step ${factura.acreditada ? 'step-primary' : ''}`}>
                                         {factura.acreditada ? `Acreditada (${factura.fecha_acreditacion})` : "Pendiente de Pago"}
                                     </li>

@@ -1,5 +1,5 @@
 import { Building2 } from "lucide-react";
-import { MOCK_OBRAS_SOCIALES } from "../mocks/Data";
+import { useObrasSociales } from "@/hooks/useObrasSociales";
 
 interface ObraSocialFilterProps {
     value: string;
@@ -7,6 +7,9 @@ interface ObraSocialFilterProps {
 }
 
 const ObraSocialFilter = ({ value, onChange }: ObraSocialFilterProps) => {
+
+    const { data: obrasSociales = [] } = useObrasSociales();
+
     return (
         <div className="flex items-center gap-2 bg-base-100 px-3 py-1 rounded-lg border border-base-300">
             <Building2 size={16} className="opacity-50 text-primary" />
@@ -16,7 +19,7 @@ const ObraSocialFilter = ({ value, onChange }: ObraSocialFilterProps) => {
                 onChange={(e) => onChange(e.target.value)}
             >
                 <option value="Todas">Todas las Obras Sociales</option>
-                {MOCK_OBRAS_SOCIALES.map((os) => (
+                {obrasSociales.map((os) => (
                     <option key={os.id} value={os.nombre}>
                         {os.nombre}
                     </option>

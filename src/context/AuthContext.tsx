@@ -65,11 +65,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             setTenantId(metadata.tenant_id || null);
 
-            console.log("User Context Loaded:", {
-                role: metadata.role,
-                tenant: metadata.tenant_name,
-                id: metadata.tenant_id
-            });
         } else {
             setUser(null);
             setTenantId(null);

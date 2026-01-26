@@ -1,35 +1,69 @@
 
-import { MOCK_FACTURAS, MOCK_PASAJEROS } from "../mocks/Data";
-import type { Factura } from "../types";
-
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+import api from "@/api/axios";
+import type { Factura, CreateFacturaPayload, UpdateFacturaPayload } from "../types";
 
 export const facturasService = {
-  getAll: async () => {
-    await delay(500);
-    // Enrich with passenger names for display purposes if needed
-    return MOCK_FACTURAS.map(f => {
-      const pasajero = MOCK_PASAJEROS.find(p => p.identificador_os.toString() === f.identificador_os);
-      return { ...f, passengerName: pasajero ? `${pasajero.nombre} ${pasajero.apellido}` : "Desconocido" };
-    });
+  getAll: async (params?: { search?: string; nro_ad?: string; estado?: string; periodo?: string }): Promise<Factura[]> => {
+    try {
+      const { data } = await api.get('/facturas', { params });
+      return data.data || data;
+    } catch (error) {
+      console.error("Error fetching facturas:", error);
+      throw error;
+    }
   },
 
-  getById: async (id: number) => {
-    await delay(300);
-    const factura = MOCK_FACTURAS.find(f => f.id === id);
-    if (!factura) throw new Error("Factura not found");
-    return factura;
+  getById: async (id: string): Promise<Factura> => {
+    try {
+      const { data } = await api.get(`/facturas/${id}`);
+      return data;
+    } catch (error) {
+      console.error(`Error fetching factura ${id}:`, error);
+      throw error;
+    }
   },
 
-  create: async (data: Omit<Factura, "id" | "created_at">) => {
-    await delay(1000);
-    console.log("Mock create invoice:", data);
-    return { id: Math.floor(Math.random() * 10000), ...data };
+  create: async (payload: CreateFacturaPayload): Promise<Factura> => {
+    try {
+      const formData = new FormData();
+      Object.entries(payload).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          if ((value as unknown) instanceof File || (value as unknown) instanceof Blob) {
+            formData.append(key, value as Blob);
+          } else {
+            formData.append(key, String(value));
+          }
+        }
+      });
+
+      const { data } = await api.post('/facturas', formData, {
+        headers: {
+          'Content-Type': undefined,
+        },
+      });
+      return data;
+    } catch (error) {
+      console.error("Error creating factura:", error);
+      throw error;
+    }
   },
 
-  update: async (id: number, updates: Partial<Factura>) => {
-    await delay(500);
-    console.log(`Mock update invoice ${id}:`, updates);
-    return { id, ...updates };
+  update: async (id: string, payload: UpdateFacturaPayload): Promise<Factura> => {
+    try {
+      const { data } = await api.put(`/facturas/${id}`, payload);
+      return data;
+    } catch (error) {
+      console.error(`Error updating factura ${id}:`, error);
+      throw error;
+    }
+  },
+
+  delete: async (id: string): Promise<void> => {
+    try {
+      await api.delete(`/facturas/${id}`);
+    } catch (error) {
+      console.error(`Error deleting factura ${id}:`, error);
+      throw error;
+    }
   }
 };

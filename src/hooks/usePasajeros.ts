@@ -9,7 +9,7 @@ export const usePasajeros = (search?: string, obra_social_id?: number) => {
     });
 };
 
-export const usePasajero = (id: string | number) => {
+export const usePasajero = (id: string) => {
     return useQuery({
         queryKey: ['pasajero', id],
         queryFn: () => pasajerosService.getById(id),

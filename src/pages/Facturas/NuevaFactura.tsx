@@ -10,8 +10,9 @@ import {
   ArrowLeft,
   Info
 } from "lucide-react";
-import type { Pasajero } from "../../types";
-import { MOCK_PASAJEROS } from "../../mocks/Data";
+import type { Pasajero, PasajeroDetail } from "../../types";
+import { useCreateFactura } from "@/hooks/useFacturas";
+import { usePasajero } from "@/hooks/usePasajeros";
 
 // Esto idealmente vendría de una configuración en la DB
 const PRECIO_KM_DEFAULT = 450;
@@ -23,65 +24,69 @@ const PERIOD_MAPPING: Record<string, string> = {
 };
 
 const NuevaFactura = () => {
+  const navigate = useNavigate();
+
   const { pasajeroId } = useParams<{ pasajeroId: string }>();
   const [searchParams] = useSearchParams();
-  // En MOCK_PASAJEROS el id es number, pero useParams trae string. 
-  // Sin embargo, en el router usamos :pasajeroId, pero en Pasajeros.tsx usamos :cuil para navegar.
-  // Revisemos el componente anterior. PasajeroDetalle usa :id para el link: `/pasajeros/${pasajero.id}/facturas/nueva`
 
-  const navigate = useNavigate();
-  const [pasajero, setPasajero] = useState<Pasajero | null>(null);
 
-  const [form, setForm] = useState({
-    kilometros: "",
+
+  const [formData, setFormData] = useState({
+    kilometros: 0,
     periodo: "",
     archivo: null as File | null,
+    client_id: pasajeroId,
+    monto_total: 0,
   });
 
-  const [loading, setLoading] = useState(false);
-
-  // Cargamos datos del pasajero desde el mock
-  useEffect(() => {
-    if (pasajeroId) {
-      const found = MOCK_PASAJEROS.find(p => p.id === Number(pasajeroId));
-      if (found) {
-        setPasajero(found);
-      }
-    }
-  }, [pasajeroId]);
+  const { data: pasajerosData, isLoading, isError, error } = usePasajero(pasajeroId!);
+  const pasajero = pasajerosData as PasajeroDetail | undefined;
+  const createMutation = useCreateFactura();
 
   useEffect(() => {
     const periodoParam = searchParams.get("periodo");
     if (periodoParam && PERIOD_MAPPING[periodoParam]) {
-      setForm(prev => ({ ...prev, periodo: PERIOD_MAPPING[periodoParam] }));
+      setFormData(prev => ({ ...prev, periodo: PERIOD_MAPPING[periodoParam] }));
     }
   }, [searchParams]);
+
+  if (isLoading) return <div className="p-8 text-center"><span className="loading loading-spinner loading-lg"></span></div>;
+  if (isError) return <div className="alert alert-error">Error al cargar pasajero: {(error as Error).message}</div>;
+  if (!pasajero) return <div className="alert alert-warning">No se encontró el pasajero</div>;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target as HTMLInputElement;
     const { name, value } = target;
     const files = target.files;
-    setForm((prev) => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: files ? files[0] : value,
     }));
   };
 
-  const totalCalculado = Number(form.kilometros) * PRECIO_KM_DEFAULT;
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const totalCalculado = Number(formData.kilometros) * PRECIO_KM_DEFAULT;
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-
-    // Simular proceso
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Redirigimos al detalle para ver el estado "Procesando"
-    // Usamos el CUIL para navegar porque es la ruta del detalle
-    if (pasajero) {
-      navigate(`/pasajeros/${pasajero.cuil}`);
+    if (Number(formData.kilometros) <= 0) {
+      alert("Por favor ingrese una cantidad válida de kilómetros");
+      return;
     }
-    setLoading(false);
+
+    createMutation.mutate({
+      periodo_desde: formData.periodo, // Added CUIL support
+      cliente_id: String(pasajeroId),
+      importe_total: totalCalculado,
+      kilometros: Number(formData.kilometros),
+      file: formData.archivo || undefined
+    }, {
+      onSuccess: () => {
+        navigate("/facturas");
+      },
+      onError: (error) => {
+        console.error("Error creating:", error);
+        alert("Error al crear pasajero");
+      }
+    });
   };
 
   return (
@@ -158,7 +163,7 @@ const NuevaFactura = () => {
                 name="periodo"
                 className="select select-bordered select-lg w-full"
                 onChange={handleChange}
-                value={form.periodo}
+                value={formData.periodo}
                 required
               >
                 <option value="">Seleccionar Mes...</option>
@@ -179,13 +184,13 @@ const NuevaFactura = () => {
             <div className="flex items-center justify-center w-full">
               <label className={`
                 flex flex-col items-center justify-center w-full h-44 border-2 border-dashed rounded-2xl cursor-pointer transition-all
-                ${form.archivo ? "border-success bg-success/5" : "border-base-300 hover:bg-base-200"}
+                ${formData.archivo ? "border-success bg-success/5" : "border-base-300 hover:bg-base-200"}
               `}>
                 <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
-                  {form.archivo ? (
+                  {formData.archivo ? (
                     <>
                       <FileCheck className="w-12 h-12 mb-3 text-success" />
-                      <p className="text-sm font-bold text-success">{form.archivo.name}</p>
+                      <p className="text-sm font-bold text-success">{formData.archivo.name}</p>
                       <p className="text-xs opacity-60">¡Archivo listo para subir!</p>
                     </>
                   ) : (
@@ -216,10 +221,10 @@ const NuevaFactura = () => {
           {/* Botón de Acción */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={isLoading}
             className="btn btn-primary btn-block btn-lg shadow-xl shadow-primary/20 gap-3"
           >
-            {loading ? (
+            {isLoading ? (
               <span className="loading loading-spinner"></span>
             ) : (
               <Zap size={20} fill="currentColor" />

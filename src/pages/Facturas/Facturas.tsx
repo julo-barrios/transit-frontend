@@ -4,8 +4,8 @@ import {
   Filter,
   Download,
   Eye,
-  Clock,
   CheckCircle2,
+  Clock,
   AlertCircle,
   Plus,
   Building2
@@ -13,23 +13,36 @@ import {
 import { Link } from "react-router-dom";
 import TableToolbar from "@/components/TableToolbar";
 import ObraSocialFilter from "@/components/ObraSocialFilter";
-import { MOCK_FACTURAS, MOCK_PASAJEROS } from "@/mocks/Data";
-import { facturasService } from "@/services/facturas";
 import ConfirmationModal from "@/components/ConfirmationModal";
+import { useFacturas, useUpdateFactura } from "@/hooks/useFacturas";
+import { usePasajeros } from "@/hooks/usePasajeros";
 
 const Facturas = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("Todos");
-  const [osFilter, setOsFilter] = useState("Todas"); // Nuevo estado para Obra Social
+  const [osFilter, setOsFilter] = useState("Todas");
 
-  const [facturas, setFacturas] = useState(MOCK_FACTURAS);
+  // Fetch Facturas
+  const { data: facturas = [], isLoading: loadingFacturas } = useFacturas({
+    search: searchTerm,
+    estado: statusFilter !== "Todos" ? statusFilter : undefined,
+    // Note: Client-side filtering for OS might be needed if API doesn't support it directly yet,
+    // or we pass it if we map it to nro_ad? The spec has 'nro_ad' param.
+    // simpler to filter client side for now if API only filters by nro_ad (passenger ID)
+  });
 
-  const [confirmationModal, setConfirmationModal] = useState<{ isOpen: boolean; invoiceId: number | null }>({
+  // Fetch Pasajeros for name lookup
+  const { data: pasajeros = [] } = usePasajeros();
+
+  // Mutations
+  const updateMutation = useUpdateFactura();
+
+  const [confirmationModal, setConfirmationModal] = useState<{ isOpen: boolean; invoiceId: string | null }>({
     isOpen: false,
     invoiceId: null
   });
 
-  const handleAcreditar = (id: number) => {
+  const handleAcreditar = (id: string) => {
     setConfirmationModal({ isOpen: true, invoiceId: id });
   };
 
@@ -38,31 +51,36 @@ const Facturas = () => {
     const id = confirmationModal.invoiceId;
 
     try {
-      await facturasService.update(id, { acreditada: true });
-      const fechaHoy = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-      setFacturas(prev => prev.map(f =>
-        f.id === id
-          ? { ...f, acreditada: true, fecha_acreditacion: fechaHoy }
-          : f
-      ));
+      updateMutation.mutate({
+        id,
+        data: {
+          acreditada: true,
+          fecha_acreditacion: new Date().toISOString().split('T')[0]
+        }
+      });
+      setConfirmationModal({ isOpen: false, invoiceId: null });
     } catch (error) {
       console.error("Error al acreditar factura:", error);
       alert("Hubo un error al acreditar la factura.");
     }
   };
 
-  // Lógica de filtrado avanzada
+  // Client-side filtering for properties not handled by API or purely UI filters
+  // (Assuming API handles search/status, but let's keep client filter for OS/Search if API is partial)
+  // Actually, let's rely on the list returned by API, but filter locally for OS since spec didn't have OS filter
   const facturasFiltradas = facturas.filter(f => {
-    // Buscamos el pasajero para obtener su nombre y su obra social
-    const pasajero = MOCK_PASAJEROS.find(p => p.identificador_os.toString() === f.identificador_os);
-    const nombreCompleto = `${pasajero?.nombre} ${pasajero?.apellido} `.toLowerCase();
-    const nombreOS = pasajero?.obra_social?.nombre || "Sin OS";
+    const pasajero = pasajeros.find(p => p.identificador_os.toString() === f.identificador_os);
+    const nombreOS = pasajero?.obra_social && typeof pasajero.obra_social !== 'string'
+      ? pasajero.obra_social.nombre
+      : "Sin OS";
 
-    const matchesSearch = nombreCompleto.includes(searchTerm.toLowerCase()) || f.numero.includes(searchTerm);
-    const matchesStatus = statusFilter === "Todos" || f.estado === statusFilter;
-    const matchesOS = osFilter === "Todas" || nombreOS === osFilter; // Condición de Obra Social
+    const matchesOS = osFilter === "Todas" || nombreOS === osFilter;
 
-    return matchesSearch && matchesStatus && matchesOS;
+    // If API handles search, strict client filtering might hide results, but if API returns all, we need this.
+    // For safety during transition, let's keep search/status filter here IF the API returns everything.
+    // But standard practice is API. Let's assume API does its job.
+    // But we need the OS filter.
+    return matchesOS;
   });
 
   const renderStatusBadge = (estado: string) => {
@@ -78,6 +96,8 @@ const Facturas = () => {
     }
   };
 
+  if (loadingFacturas) return <div className="p-8 text-center"><span className="loading loading-spinner loading-lg"></span></div>;
+
   return (
     <PageLayout
       title="Gestión de Facturas"
@@ -92,14 +112,12 @@ const Facturas = () => {
       }
     >
       <div className="space-y-6">
-        {/* Barra de Herramientas Mejorada */}
-        {/* Barra de Herramientas Mejorada */}
         <TableToolbar
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
           placeholder="Buscar por pasajero o N° factura..."
         >
-          {/* Filtro Obra Social (NUEVO) */}
+          {/* Filtro Obra Social */}
           <ObraSocialFilter value={osFilter} onChange={setOsFilter} />
 
           {/* Filtro Estado */}
@@ -133,7 +151,14 @@ const Facturas = () => {
             </thead>
             <tbody>
               {facturasFiltradas.map((f) => {
-                const pasajero = MOCK_PASAJEROS.find(p => p.identificador_os.toString() === f.identificador_os);
+                const pasajero = pasajeros.find(p => p.identificador_os.toString() === f.identificador_os);
+
+                // Safe access to OS name
+                const nombrePasajero = pasajero ? `${pasajero.nombre} ${pasajero.apellido}` : "Desconocido";
+                const nombreOS = pasajero?.obra_social && typeof pasajero.obra_social !== 'string'
+                  ? pasajero.obra_social.nombre
+                  : (typeof pasajero?.obra_social === 'string' ? pasajero.obra_social : "Sin OS");
+
                 return (
                   <tr key={f.id} className="hover:bg-base-200/40 transition-colors">
                     <td>
@@ -144,12 +169,12 @@ const Facturas = () => {
                       <div className="flex items-center gap-3">
                         <div className="avatar placeholder">
                           <div className="bg-primary/10 text-primary rounded-full w-8 font-bold">
-                            <span className="text-[10px]">{pasajero?.nombre[0]}{pasajero?.apellido[0]}</span>
+                            <span className="text-[10px]">{nombrePasajero.substring(0, 2).toUpperCase()}</span>
                           </div>
                         </div>
                         <div>
-                          <div className="font-medium text-sm">{pasajero?.nombre} {pasajero?.apellido}</div>
-                          <div className="text-[10px] font-bold text-primary uppercase">{pasajero?.obra_social?.nombre || "OSECAC"}</div>
+                          <div className="font-medium text-sm">{nombrePasajero}</div>
+                          <div className="text-[10px] font-bold text-primary uppercase">{nombreOS}</div>
                         </div>
                       </div>
                     </td>
@@ -158,7 +183,7 @@ const Facturas = () => {
                     </td>
                     <td>
                       <div className="font-black text-primary italic">
-                        ${f.importe_total.toLocaleString('es-AR')}
+                        ${Number(f.importe_total).toLocaleString('es-AR')}
                       </div>
                     </td>
                     <td>
