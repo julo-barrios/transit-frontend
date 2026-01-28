@@ -31,7 +31,7 @@ export default function AccreditationPending() {
         const id = confirmationModal.invoiceId;
 
         try {
-            await facturasService.update(id, { acreditada: true });
+            await facturasService.update(String(id), { acreditada: true });
             // Invalidate query to refetch fresh data
             queryClient.invalidateQueries({ queryKey: ['dashboard', 'accreditation_pending'] });
             // Also update KPIs as pending collection decreases

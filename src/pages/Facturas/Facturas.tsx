@@ -69,7 +69,7 @@ const Facturas = () => {
   // (Assuming API handles search/status, but let's keep client filter for OS/Search if API is partial)
   // Actually, let's rely on the list returned by API, but filter locally for OS since spec didn't have OS filter
   const facturasFiltradas = facturas.filter(f => {
-    const pasajero = pasajeros.find(p => p.identificador_os.toString() === f.identificador_os);
+    const pasajero = pasajeros.find(p => p.id.toString() === f.cliente_id);
     const nombreOS = pasajero?.obra_social && typeof pasajero.obra_social !== 'string'
       ? pasajero.obra_social.nombre
       : "Sin OS";
@@ -151,7 +151,7 @@ const Facturas = () => {
             </thead>
             <tbody>
               {facturasFiltradas.map((f) => {
-                const pasajero = pasajeros.find(p => p.identificador_os.toString() === f.identificador_os);
+                const pasajero = pasajeros.find(p => p.id.toString() === f.cliente_id);
 
                 // Safe access to OS name
                 const nombrePasajero = pasajero ? `${pasajero.nombre} ${pasajero.apellido}` : "Desconocido";
