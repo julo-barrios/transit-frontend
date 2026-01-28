@@ -61,6 +61,29 @@ export interface CreatePasajeroPayload {
 
 export type UpdatePasajeroPayload = Partial<CreatePasajeroPayload>;
 
+// Workflow Types
+export interface WorkflowStep {
+  step_order: number;
+  name: string;
+  status: "pending" | "current" | "completed" | "error";
+  state_label: string;
+  is_current: boolean;
+}
+
+export const FACTURA_ESTADOS = {
+  BORRADOR: "Borrador",
+  PENDIENTE_ARCA: "Pendiente ARCA",
+  CARGADA_ARCA: "Cargada ARCA",
+  FALLO_ARCA: "Fallo ARCA",
+  PENDIENTE_ENVIO_OS: "Pendiente Envío OS",
+  ENVIADA_OS: "Enviada OS",
+  FALLO_ENVIO_OS: "Fallo Envío OS",
+  PENDIENTE_ACREDITACION: "Pendiente Acreditación",
+  ACREDITADA: "Acreditada"
+} as const;
+
+export type FacturaEstado = typeof FACTURA_ESTADOS[keyof typeof FACTURA_ESTADOS];
+
 export interface Factura {
   id: string;
   cliente_id: string;
@@ -77,10 +100,11 @@ export interface Factura {
   created_at: string;
   acreditada?: boolean;
   fecha_acreditacion?: string;
-  estado: "Enviada" | "Procesando ARCA" | "Error" | "Pagada" | "Pendiente";
+  estado: FacturaEstado | string; // Allow string fallback for backward compatibility
   planilla_path?: string;
   pasajero_nombre?: string;
   obra_social_nombre?: string;
+  workflow?: WorkflowStep[];
 }
 
 export type CreateFacturaPayload = Omit<Factura, "id" | "estado" | "created_at" | "acreditada" | "fecha_acreditacion" | "fecha_factura" | "fecha_cai" | "cai" | "letra" | "sucursal" | "numero" | "pdf_path" | "planilla_path"> & { file?: File };

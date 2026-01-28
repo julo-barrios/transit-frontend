@@ -32,18 +32,30 @@ const FacturaDetalle = () => {
     const [showConfirmation, setShowConfirmation] = useState(false);
 
     // Derived State
-    const pasajero = factura
-        ? pasajeros.find(p => p.identificador_os.toString() === factura.identificador_os)
+    // Derived State
+    const pasajero = factura && pasajeros
+        ? pasajeros.find(p => p.id === Number(factura.cliente_id))
         : null;
 
     const renderStatusBadge = (estado: string) => {
-        switch (estado) {
-            case "Enviada": return <span className="badge badge-success badge-lg gap-2 text-white"><CheckCircle2 size={16} /> Enviada a OS</span>;
-            case "Procesando ARCA": return <span className="badge badge-warning badge-lg gap-2"><Clock size={16} /> Procesando ARCA</span>;
-            case "Error": return <span className="badge badge-error badge-lg gap-2 text-white"><AlertCircle size={16} /> Error</span>;
-            default: return <span className="badge badge-ghost badge-lg gap-2">{estado}</span>;
+        // Map backend states to UI colors
+        const successStates = ["Enviada OS", "Acreditada", "Cargada ARCA"];
+        const warningStates = ["Pendiente ARCA", "Pendiente Envío OS", "Pendiente Acreditación", "Procesando ARCA"];
+        const errorStates = ["Error", "Fallo ARCA", "Fallo Envío OS"];
+
+        if (successStates.includes(estado)) {
+            return <span className="badge badge-success badge-lg gap-2 text-white"><CheckCircle2 size={16} /> {estado}</span>;
         }
+        if (warningStates.includes(estado)) {
+            return <span className="badge badge-warning badge-lg gap-2"><Clock size={16} /> {estado}</span>;
+        }
+        if (errorStates.includes(estado)) {
+            return <span className="badge badge-error badge-lg gap-2 text-white"><AlertCircle size={16} /> {estado}</span>;
+        }
+        return <span className="badge badge-ghost badge-lg gap-2">{estado}</span>;
     };
+
+
 
     const handleAccredit = () => {
         setShowConfirmation(true);
@@ -201,19 +213,50 @@ const FacturaDetalle = () => {
                     <div className="space-y-6">
                         <div className="card bg-base-100 shadow border border-base-200">
                             <div className="card-body p-6">
-                                <h3 className="font-bold mb-4">Historial de Eventos</h3>
-                                <ul className="steps steps-vertical text-sm">
-                                    <li className="step step-primary">Peticion de factura ({factura.fecha_factura})</li>
-                                    <li className="step step-primary">Factura generada</li>
-                                    <li className="step step-primary">Envío a {
-                                        pasajero?.obra_social && typeof pasajero.obra_social !== 'string'
-                                            ? pasajero.obra_social.nombre
-                                            : (typeof pasajero?.obra_social === 'string' ? pasajero.obra_social : "OS")
-                                    }</li>
-                                    <li className={`step ${factura.acreditada ? 'step-primary' : ''}`}>
-                                        {factura.acreditada ? `Acreditada (${factura.fecha_acreditacion})` : "Pendiente de Pago"}
-                                    </li>
-                                </ul>
+                                <h3 className="font-bold mb-4 flex items-center gap-2">
+                                    <Clock size={18} className="text-primary" />
+                                    Progreso de la Factura
+                                </h3>
+
+                                {factura.workflow && factura.workflow.length > 0 ? (
+                                    <ul className="steps steps-vertical text-sm w-full">
+                                        {factura.workflow.map((step) => {
+                                            const getStepColor = (status: string) => {
+                                                if (status === 'completed') return 'step-primary';
+                                                if (status === 'current') return 'step-primary step-active'; // Or custom accent
+                                                if (status === 'error') return 'step-error';
+                                                return '';
+                                            };
+
+                                            return (
+                                                <li
+                                                    key={step.step_order}
+                                                    className={`step ${getStepColor(step.status)}`}
+                                                    data-content={step.status === 'completed' ? '✓' : (step.status === 'error' ? '!' : undefined)}
+                                                >
+                                                    <div className="flex flex-col items-start text-left ml-2">
+                                                        <span className={`font-bold ${step.is_current ? 'text-primary' : ''}`}>{step.name}</span>
+                                                        <span className="text-xs opacity-60">{step.state_label}</span>
+                                                    </div>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                ) : (
+                                    // Fallback for invoices without workflow (legacy)
+                                    <ul className="steps steps-vertical text-sm">
+                                        <li className="step step-primary">Peticion de factura ({factura?.fecha_factura})</li>
+                                        <li className="step step-primary">Factura generada</li>
+                                        <li className="step step-primary">Envío a {
+                                            pasajero?.obra_social && typeof pasajero.obra_social !== 'string'
+                                                ? pasajero.obra_social.nombre
+                                                : (typeof pasajero?.obra_social === 'string' ? pasajero.obra_social : "OS")
+                                        }</li>
+                                        <li className={`step ${factura?.acreditada ? 'step-primary' : ''}`}>
+                                            {factura?.acreditada ? `Acreditada (${factura?.fecha_acreditacion})` : "Pendiente de Pago"}
+                                        </li>
+                                    </ul>
+                                )}
                             </div>
                         </div>
                     </div>
