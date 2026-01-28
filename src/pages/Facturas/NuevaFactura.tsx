@@ -10,7 +10,7 @@ import {
   ArrowLeft,
   Info
 } from "lucide-react";
-import type { Pasajero, PasajeroDetail } from "../../types";
+import type { PasajeroDetail } from "../../types";
 import { useCreateFactura } from "@/hooks/useFacturas";
 import { usePasajero } from "@/hooks/usePasajeros";
 
